@@ -5,7 +5,7 @@ This documentation contains all the example codes that demonstrates data collect
 
 Example codes (with explanations):
 
-* Data Collection
+* [Data Collection](ExampleCodes/DataCollection.md)
 
 * Model Training
 

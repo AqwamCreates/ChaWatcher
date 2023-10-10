@@ -6,7 +6,7 @@ local ChaWatcher = require(ServerScriptService:WaitForChild("ChaWatcher"))
 
 local DataCollector = ChaWatcher.DataCollector.new(true, "1")
 
-DataCollector:bindToHeartbeat(function(Player, fullDataVector)
+DataCollector:bindToHeartbeat(function(Player, fullDataVector) -- Runs a function every heartbeat.
 
 	print(Player.Name .. "\'s data has been collected!")
 

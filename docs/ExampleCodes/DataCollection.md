@@ -20,7 +20,7 @@ end)
 
 DataCollector:bindToMissingData(function(Player) -- Runs a function if cannot create data vector.
 
-	print(Player.Name .. "\'s data has missing data!")
+	print(Player.Name .. " has missing data!")
 
 	local currentDataVector, previousDataVector = DataCollector:getPlayerDataVectors()
 

@@ -6,7 +6,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local MatrixL = require(ServerScriptService.MatrixL)
 
-local ChaWatcher = require(ServerScriptService:WaitForChild("ChaWatcher"))
+local ChaWatcher = require(ServerScriptService.ChaWatcher)
 
 local DataCollector = ChaWatcher.DataCollector.new(true, "1")
 

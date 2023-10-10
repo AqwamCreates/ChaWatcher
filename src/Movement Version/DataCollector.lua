@@ -258,8 +258,16 @@ function DataCollector:getPlayerDataVectors(Player: Player)
 end
 
 function DataCollector:getFullData()
-
-	return self.FullData
+	
+	if (#self.FullData > 0) then
+		
+		return self.FullData
+		
+	else
+		
+		return DataCollectorDataStore:GetAsync(self.DataStoreKey)
+		
+	end 
 
 end
 

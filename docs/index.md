@@ -7,6 +7,6 @@ Example codes (with explanations):
 
 * [Data Collection](ExampleCodes/DataCollection.md)
 
-* Model Training
+* [Model Training](ExampleCodes/ModelTraining.md)
 
-* Anomaly Detection
+* [Anomaly Detection](ExampleCodes/AnomalyDetection.md)

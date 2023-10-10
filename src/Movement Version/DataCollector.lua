@@ -349,6 +349,12 @@ function DataCollector:stop()
 
 end
 
+function DataCollector:clearFullData()
+	
+	self.FullData = {}
+	
+end
+
 function DataCollector:destroy()
 
 	for _, Connection in ipairs(self.ConnectionsArray) do Connection:Disconnect() end

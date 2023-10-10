@@ -32,7 +32,7 @@ function DataCollector:updateDataVector(Player)
 
 	local distance = changeInPosition.Magnitude
 
-	local dataVector = {{
+	local dataVector = {
 
 		changeInPosition.X, changeInPosition.Y, changeInPosition.Z,
 
@@ -44,7 +44,7 @@ function DataCollector:updateDataVector(Player)
 
 		timeSpentFlying, distance
 
-	}}
+	}
 
 	return dataVector
 
@@ -183,10 +183,9 @@ function DataCollector:onHeartbeatForPlayer(Player, deltaTime)
 
 	local dataVector = self:updateDataVector(Player)
 
-	if self.StoreFullData then table.insert(self.FullData, dataVector[1]) end
+	if self.StoreFullData then table.insert(self.FullData, dataVector) end
 
 	if self.OnHeartbeatFunction then self.OnHeartbeatFunction(Player, dataVector) end
-	
 	
 end
 

@@ -10,6 +10,8 @@ DataCollector:bindToHeartbeat(function(Player, fullDataVector)
 
 	print(Player.Name .. "\'s data has been collected!")
 
+	local distance = fullDataVector[14]
+
 end)
 
 DataCollector:bindToMissingData(function(Player) -- Runs a function if cannot create data vector.

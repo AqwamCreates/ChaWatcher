@@ -265,7 +265,9 @@ function DataCollector:getFullData()
 		
 	else
 		
-		return DataCollectorDataStore:GetAsync(self.DataStoreKey)
+		local fullData = DataCollectorDataStore:GetAsync(self.DataStoreKey)
+		
+		return fullData
 		
 	end 
 

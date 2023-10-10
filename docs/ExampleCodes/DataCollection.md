@@ -2,6 +2,10 @@
 
 ```lua
 
+local ServerScriptService = game:GetService("ServerScriptService")
+
+local MatrixL = require(ServerScriptService.MatrixL)
+
 local ChaWatcher = require(ServerScriptService:WaitForChild("ChaWatcher"))
 
 local DataCollector = ChaWatcher.DataCollector.new(true, "1")
@@ -28,7 +32,7 @@ DataCollector:stop()  -- Stops collecting data
 game:BindToClose(function()
 
 	local fullData = DataCollector:getFullData()
-	print(fullData)
+	MatrixL:printMatrix(fullData)
 
 	DataCollector:saveFullDataOnline() -- Saves data to online
 

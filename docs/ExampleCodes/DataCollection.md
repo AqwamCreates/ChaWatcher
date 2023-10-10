@@ -26,8 +26,9 @@ DataCollector:bindToMissingData(function(Player) -- Runs a function if cannot cr
 
 end)
 
-DataCollector:start() -- Starts collecting data
-DataCollector:stop()  -- Stops collecting data
+DataCollector:start() -- Starts collecting data.
+DataCollector:stop()  -- Stops collecting data.
+DataCollector:start() -- Starts collecting data. Again!
 
 game:BindToClose(function()
 

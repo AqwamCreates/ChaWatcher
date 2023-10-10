@@ -34,15 +34,15 @@ function AnomalyDetector:createDataCollector()
 	
 	local DataCollector = require(ChaWatcher.SourceCodes.DataCollector).new(false)
 	
-	DataCollector:bindToHeartbeat(function(Player, physicsVector)
+	DataCollector:bindToHeartbeat(function(Player, fullDataVector)
 		
-		local predictedValue = self.SupportVectorMachine:predict(physicsVector, true)[1][1]
+		local predictedValue = self.SupportVectorMachine:predict({fullDataVector}, true)[1][1]
 
 		local isOutlier = (predictedValue <= self.NormalThreshold)
 		
-		if self.HeartbeatFunction then self.HeartbeatFunction(Player, predictedValue, physicsVector) end
+		if self.HeartbeatFunction then self.HeartbeatFunction(Player, predictedValue, fullDataVector) end
 		
-		if isOutlier and self.OutlierFoundFunction then self.OutlierFoundFunction(Player, predictedValue, physicsVector) end
+		if isOutlier and self.OutlierFoundFunction then self.OutlierFoundFunction(Player, predictedValue, fullDataVector) end
 
 	end)
 

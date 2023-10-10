@@ -6,7 +6,9 @@ This documentation contains all the example codes that demonstrates data collect
 
 You only need to collect normal (non-hacker) data. You can include outlier (hacker) data, but it may reduce the ChaWatcher's model accuracy.
 
-Example codes (with explanations):
+## Example codes (with explanations):
+
+### Movement Version
 
 * [Data Collection](ExampleCodes/DataCollection.md)
 

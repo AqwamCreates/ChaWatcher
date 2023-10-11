@@ -10,7 +10,7 @@ The above copyright notice and this permission notice shall be included in all c
 
 This license applies to the following named files located in the specified folders of the ChaWatcher software library:
 
-* Folder: ChaWatcher/SourceCodes/Original
+* Folder: ChaWatcher/src/Original
 	
   * AnomalyDetector
   * DataCollector
@@ -18,7 +18,7 @@ This license applies to the following named files located in the specified folde
   * OfflineData
   * OfflineModelSettings
 
-* Folder: ChaWatcher/SourceCodes/Custom
+* Folder: ChaWatcher/src/Custom
 	
   	* AnomalyDetector
   	* DataCollector

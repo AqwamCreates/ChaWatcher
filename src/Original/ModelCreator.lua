@@ -75,7 +75,7 @@ end
 
 function ModelCreator:saveModelOnline()
 	
-	if not self.AnomalyDetectorDataStoreKey then return false end
+	if not self.ModelCreatorDataStoreKey then return false end
 
 	local success
 
@@ -83,7 +83,7 @@ function ModelCreator:saveModelOnline()
 
 		success = pcall(function()
 
-			ModelCreatorDataStore:SetAsync(self.AnomalyDetectorDataStoreKey, self.Model)
+			ModelCreatorDataStore:SetAsync(self.ModelCreatorDataStoreKey, self.Model)
 
 		end)
 
@@ -99,7 +99,7 @@ end
 
 function ModelCreator:train(numberOfDataToUse: number)
 	
-	local data = fetchData(self.UseOnlineData, self.ModelCreatorDataStoreKey)
+	local data = fetchData(self.UseOnlineData, self.DataCollectorDataStoreKey)
 	
 	if not data then error("No data!") end
 	

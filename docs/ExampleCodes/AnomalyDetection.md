@@ -34,8 +34,8 @@ AnomalyDetector:bindToMissingData(function(Player) -- Runs a function if cannot 
 
 end)
 
-AnomalyDetector:start() -- Starts collecting data.
-AnomalyDetector:stop()  -- Stops collecting data.
-AnomalyDetector:start() -- Starts collecting data. Again!
+AnomalyDetector:start() -- Starts detecting outlier data.
+AnomalyDetector:stop()  -- Stops detecting outlier data.
+AnomalyDetector:start() -- Starts detecting outlier data. Again!
 
 ```

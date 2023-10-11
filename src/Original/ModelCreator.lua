@@ -8,11 +8,9 @@ ModelCreator = {}
 
 ModelCreator.__index = ModelCreator
 
-local ChaWatcher = script.Parent.Parent.Parent
-
 local function createSupportVectorMachine()
 	
-	local SupportVectorMachine = require(ChaWatcher.AqwamProprietarySourceCodes.SupportVectorMachine).new()
+	local SupportVectorMachine = require(script.Parent.Parent.Parent.AqwamProprietarySourceCodes.SupportVectorMachine).new()
 	
 	SupportVectorMachine:setWaitDurations(0.3)
 	

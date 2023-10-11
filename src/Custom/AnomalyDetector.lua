@@ -14,7 +14,7 @@ end
 
 function AnomalyDetector:updateDataVectors(Player: Player, currentData, isNewData: boolean)
 
-	self.AnomalyDetector:updateDataVectors(Player, currentData, isNewData)
+	self.DataCollector:updateDataVectors(Player, currentData, isNewData)
 
 end
 

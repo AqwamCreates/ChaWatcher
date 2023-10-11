@@ -8,9 +8,9 @@ local MatrixL = require(ServerScriptService.MatrixL)
 
 local ChaWatcher = require(ServerScriptService.ChaWatcher)
 
-local AnomalyDetector = ChaWatcher.Original.DataCollector.new(true, "1")
+local AnomalyDetector = ChaWatcher.Original.DataCollector.new(0.5, false)
 
-AnomalyDetector:bindToOutlierFound(function(Player) -- Runs a function if player's data is an outlier
+AnomalyDetector:bindToOutlierFound(function(Player, predictedValue, fullDataVector) -- Runs a function if player's data is an outlier
 
 	print(Player.Name .. " has an outlier data!")
 
@@ -18,7 +18,7 @@ AnomalyDetector:bindToOutlierFound(function(Player) -- Runs a function if player
 
 end)
 
-AnomalyDetector:bindToHeartbeat(function(Player, fullDataVector) -- Runs a function on every heartbeat.
+AnomalyDetector:bindToHeartbeat(function(Player, predictedValue, fullDataVector) -- Runs a function on every heartbeat.
 
 	print(Player.Name .. "\'s data has been collected!")
 

@@ -98,11 +98,9 @@ function DataCollector:onHeartbeatForPlayer(Player, deltaTime)
 	
 	local stringUserId = tostring(Player.UserId)
 	
-	local hasMissingData = self.PlayerHasMissingData[stringUserId]
-	
-	if hasMissingData and self.OnMissingDataFunction then 
+	if self.PlayerHasMissingData[stringUserId] then 
 
-		self.OnMissingDataFunction(Player) 
+		if self.OnMissingDataFunction then self.OnMissingDataFunction(Player) end
 		return
 
 	end

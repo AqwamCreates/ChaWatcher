@@ -3,29 +3,34 @@ MIT License - ChaWatcher Software Library
 Copyright (c) 2023 Aqwam Harish Aiman
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software library ("Library"), 
-to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, sublicense, 
-and/or sell copies of the Library to any entity except Roblox Corporation, and to permit persons to whom the Library is furnished to do so, subject to the following conditions:
+to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, 
+sublicense, and/or sell copies of the Library, and to permit persons to whom the Library is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Library.
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Library.
 
 This license applies to the following named files located in the specified folders of the ChaWatcher software library:
 
-* Folder: ChaWatcher/src/Original
-	
+* Folder: ChaWatcher/SourceCodes/Original
+
   * AnomalyDetector
   * DataCollector
   * ModelCreator
   * OfflineData
   * OfflineModelSettings
 
-* Folder: ChaWatcher/src/Custom
-	
+* Folder: ChaWatcher/SourceCodes/Custom
+
   * AnomalyDetector
   * DataCollector
   * ModelCreator
   * OfflineData
   * OfflineModelSettings
+  	
+This license will not be granted to Roblox Corporation regardless it is a derivative or not. A separate commercial agreement must be made between the 
+Licensor and Roblox Corporation in order to use Library.
 
 THE LIBRARY IS PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
 FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, 
 WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE LIBRARY OR THE USE OR OTHER DEALINGS IN THE LIBRARY.
+
+--]]

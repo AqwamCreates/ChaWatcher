@@ -20,32 +20,32 @@ local function createSupportVectorMachine()
 	
 end
 
-function ModelCreator.new(useOnlineData: boolean, dataCollectorDataStoreKey: string, anomalyDetectorDataStoreKey: string)
-	
+function ModelCreator.new(useOnlineData: boolean, dataCollectorDataStoreKey: string, modelCreatorDataStoreKey: string)
+
 	local NewModelCreator = {}
-	
+
 	setmetatable(NewModelCreator, ModelCreator)
-	
+
 	dataCollectorDataStoreKey = dataCollectorDataStoreKey or "default"
-	
-	anomalyDetectorDataStoreKey = anomalyDetectorDataStoreKey or "default"
+
+	modelCreatorDataStoreKey = modelCreatorDataStoreKey or "default"
 
 	if (typeof(dataCollectorDataStoreKey) ~= "string") then error("Data collector datastore key is not a string value!") end
-	
-	if (typeof(anomalyDetectorDataStoreKey) ~= "string") then error("Anomaly detector datastore key is not a string value!") end
-	
+
+	if (typeof(modelCreatorDataStoreKey) ~= "string") then error("Anomaly detector datastore key is not a string value!") end
+
 	NewModelCreator.UseOnlineData = useOnlineData
-	
+
+	NewModelCreator.ModelCreatorDataStoreKey = modelCreatorDataStoreKey
+
 	NewModelCreator.DataCollectorDataStoreKey = dataCollectorDataStoreKey
-	
-	NewModelCreator.AnomalyDetectorDataStoreKey = dataCollectorDataStoreKey
-	
+
 	NewModelCreator.Model = {}
-	
+
 	NewModelCreator.SupportVectorMachine = createSupportVectorMachine()
-	
+
 	return NewModelCreator
-	
+
 end
 
 function ModelCreator:setParameters(maxNumberOfIterations, cValue, targetCost, kernelFunction, kernelParameters)
@@ -157,7 +157,7 @@ function ModelCreator:loadModelFromOnline()
 
 		success = pcall(function()
 
-			self.Model = ModelCreatorDataStore:GetAsync(self.DataStoreKey)
+			self.Model = ModelCreatorDataStore:GetAsync(self.ModelCreatorDataStoreKey)
 
 		end)
 

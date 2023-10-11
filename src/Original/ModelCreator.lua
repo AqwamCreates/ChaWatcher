@@ -20,7 +20,7 @@ local function createSupportVectorMachine()
 	
 end
 
-function ModelCreator.new(useOnlineData: boolean, dataCollectorDataStoreKey: string, anomalyDetectorDataStoreKey: string)
+function ModelCreator.new(useOnlineData: boolean, dataCollectorDataStoreKey: string, modelCreatorDataStoreKey: string)
 	
 	local NewModelCreator = {}
 	
@@ -28,17 +28,17 @@ function ModelCreator.new(useOnlineData: boolean, dataCollectorDataStoreKey: str
 	
 	dataCollectorDataStoreKey = dataCollectorDataStoreKey or "default"
 	
-	anomalyDetectorDataStoreKey = anomalyDetectorDataStoreKey or "default"
+	modelCreatorDataStoreKey = modelCreatorDataStoreKey or "default"
 
 	if (typeof(dataCollectorDataStoreKey) ~= "string") then error("Data collector datastore key is not a string value!") end
 	
-	if (typeof(anomalyDetectorDataStoreKey) ~= "string") then error("Anomaly detector datastore key is not a string value!") end
+	if (typeof(modelCreatorDataStoreKey) ~= "string") then error("Anomaly detector datastore key is not a string value!") end
 	
 	NewModelCreator.UseOnlineData = useOnlineData
 	
-	NewModelCreator.DataCollectorDataStoreKey = dataCollectorDataStoreKey
+	NewModelCreator.ModelCreatorDataStoreKey = modelCreatorDataStoreKey
 	
-	NewModelCreator.AnomalyDetectorDataStoreKey = dataCollectorDataStoreKey
+	NewModelCreator.DataCollectorDataStoreKey = dataCollectorDataStoreKey
 	
 	NewModelCreator.Model = {}
 	
@@ -99,7 +99,7 @@ end
 
 function ModelCreator:train(numberOfDataToUse: number)
 	
-	local data = fetchData(self.UseOnlineData, self.DataCollectorDataStoreKey)
+	local data = fetchData(self.UseOnlineData, self.ModelCreatorDataStoreKey)
 	
 	if not data then error("No data!") end
 	
@@ -141,7 +141,7 @@ function ModelCreator:getModel()
 
 	else
 
-		local Model = ModelCreatorDataStore:GetAsync(self.DataStoreKey)
+		local Model = ModelCreatorDataStore:GetAsync(self.ModelCreatorDataStoreKey)
 
 		return Model
 
@@ -157,7 +157,7 @@ function ModelCreator:loadModelFromOnline()
 		
 		success = pcall(function()
 			
-			self.Model = ModelCreatorDataStore:GetAsync(self.DataStoreKey)
+			self.Model = ModelCreatorDataStore:GetAsync(self.ModelCreatorDataStoreKey)
 			
 		end)
 		

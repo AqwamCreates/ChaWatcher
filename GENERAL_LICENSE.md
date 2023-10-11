@@ -16,7 +16,7 @@ NOW, THEREFORE, by using and possessing the Library, Licensee accepts and agrees
 
 1.1 Open-Source License Components: Licensor hereby grants Licensee a worldwide, non-exclusive, royalty-free, perpetual, and irrevocable license to use, copy, modify, distribute, and sublicense the open-source components of the Library under the terms and conditions of the Open-Source License, contained in the Library.
 
-1.2 Proprietary License Components: Licensor hereby grants Licensee a worldwide, non-exclusive, non-transferable, royalty-bearing, and revocable license to use the proprietary components of the Library under the terms and conditions of the Proprietary License, contained in the Library
+1.2 Proprietary License Components: Licensor hereby grants Licensee a worldwide, non-exclusive, non-transferable, royalty-bearing, and revocable license to use the proprietary components of the Library under the terms and conditions of the Proprietary License, contained in the Library.
 
 ## Restrictions on Derivative Works
 

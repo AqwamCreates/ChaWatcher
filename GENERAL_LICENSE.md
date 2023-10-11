@@ -30,7 +30,7 @@ NOW, THEREFORE, by using and possessing the Software Library, Licensee accepts a
 
 ## No Warranty
 
-4.1 The Software Library is provided "as is" without any warranty, express or implied, including but not limited to the warranties of merchantability and fitness for a particular purpose. Licensor shall not be liable for any direct, indirect, incidental, special, or consequential damages.
+4.1 The Software Library is provided "AS IS" without any warranty, express or implied, including but not limited to the warranties of merchantability and fitness for a particular purpose. Licensor shall not be liable for any direct, indirect, incidental, special, or consequential damages.
 
 ## Termination
 

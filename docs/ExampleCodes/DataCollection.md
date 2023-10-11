@@ -33,7 +33,7 @@ DataCollector:start() -- Starts collecting data. Again!
 game:BindToClose(function()
 
 	local fullData = DataCollector:getFullData()
-	MatrixL:printMatrix(fullData)
+	MatrixL:printMatrixWitchComma(fullData)
 
 	DataCollector:saveFullDataOnline() -- Saves data to online
 

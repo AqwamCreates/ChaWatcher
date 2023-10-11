@@ -44,4 +44,6 @@ NOW, THEREFORE, by using and possessing the Software Library, Licensee accepts a
 
 7.1 This Agreement shall be governed by and construed in accordance with the laws of [Your Jurisdiction], without regard to its conflicts of law principles.
 
+## Entire Agreement
+
 By using and possessing the Software Library, Licensee acknowledges and accepts the terms and conditions of this Agreement, including the restrictions on derivative works regarding commercial agreements with Roblox and the prohibition on free distribution.

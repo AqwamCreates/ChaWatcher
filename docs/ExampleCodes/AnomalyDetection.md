@@ -8,9 +8,17 @@ local MatrixL = require(ServerScriptService.MatrixL)
 
 local ChaWatcher = require(ServerScriptService.ChaWatcher)
 
-local DataCollector = ChaWatcher.Original.DataCollector.new(true, "1")
+local AnomalyDetector = ChaWatcher.Original.DataCollector.new(true, "1")
 
-DataCollector:bindToHeartbeat(function(Player, fullDataVector) -- Runs a function on every heartbeat.
+AnomalyDetector:bindToOutlierFound(function(Player) -- Runs a function if player's data is an outlier
+
+	print(Player.Name .. " has an outlier data!")
+
+	local currentDataVector, previousDataVector = AnomalyDetector:getPlayerDataVectors()
+
+end)
+
+AnomalyDetector:bindToHeartbeat(function(Player, fullDataVector) -- Runs a function on every heartbeat.
 
 	print(Player.Name .. "\'s data has been collected!")
 
@@ -18,25 +26,16 @@ DataCollector:bindToHeartbeat(function(Player, fullDataVector) -- Runs a functio
 
 end)
 
-DataCollector:bindToMissingData(function(Player) -- Runs a function if cannot create data vector.
+AnomalyDetector:bindToMissingData(function(Player) -- Runs a function if cannot create data vector.
 
 	print(Player.Name .. " has missing data!")
 
-	local currentDataVector, previousDataVector = DataCollector:getPlayerDataVectors()
+	local currentDataVector, previousDataVector = AnomalyDetector:getPlayerDataVectors()
 
 end)
 
-DataCollector:start() -- Starts collecting data.
-DataCollector:stop()  -- Stops collecting data.
-DataCollector:start() -- Starts collecting data. Again!
-
-game:BindToClose(function()
-
-	local fullData = DataCollector:getFullData()
-	MatrixL:printMatrix(fullData)
-
-	DataCollector:saveFullDataOnline() -- Saves data to online
-
-end)
+AnomalyDetector:start() -- Starts collecting data.
+AnomalyDetector:stop()  -- Stops collecting data.
+AnomalyDetector:start() -- Starts collecting data. Again!
 
 ```

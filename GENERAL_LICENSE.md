@@ -1,6 +1,6 @@
-# Irrevocable Dual License Agreement with Restrictions on Derivative Works
+# Dual License Agreement
 
-This Irrevocable Dual License Agreement ("Agreement") is automatically and irrevocably in effect upon the use and possession of the [Software Library Name] (the "Software Library") by any individual or entity ("Licensee") and sets forth the terms and conditions for the Licensee's use of the Software Library. Licensee acknowledges that this Agreement cannot be removed or modified.
+This Dual License Agreement ("Agreement") is automatically and irrevocably in effect upon the use and possession of the ChaWatcher (the "Software Library") by any individual or entity ("Licensee") and sets forth the terms and conditions for the Licensee's use of the Software Library. Licensee acknowledges that this Agreement cannot be removed or modified.
 
 ## Recitals
 

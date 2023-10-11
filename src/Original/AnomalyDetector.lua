@@ -104,11 +104,11 @@ function AnomalyDetector.new(normalThreshold: number, useOnlineModel: boolean, k
 		
 	local kernelParameters = Settings["kernelParameters"]
 	
-	if not ModelParameters then error("No Model Parameters Found!") end
+	if not ModelParameters then error("No model parameters found!") end
 	
-	if not kernelFunction then warn("No Kernel Function Found! Using Default Function!") end
+	if not kernelFunction then warn("No kernel function found! Using default function!") end
 	
-	if not kernelParameters then warn("No Kernel Parameters Found! Using Default Values!") end
+	if not kernelParameters then warn("No Kkernel parameters Found! Using default values!") end
 	
 	NewAnomalyDetector.SupportVectorMachine = NewAnomalyDetector:createSupportVectorMachine(ModelParameters, kernelFunction, kernelParameters)
 	

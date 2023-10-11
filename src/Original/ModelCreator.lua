@@ -165,7 +165,7 @@ function ModelCreator:loadModelFromOnline()
 		
 	until success
 	
-	if self.Model == nil then warn("No Model Found!") return end
+	if self.Model == nil then warn("No model found!") return end
 	
 	self.SupportVectorMachine:setModelParameters(self.Model.ModelParameters)
 	

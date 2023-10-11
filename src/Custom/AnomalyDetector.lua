@@ -4,8 +4,6 @@ AnomalyDetector = {}
 
 AnomalyDetector.__index = AnomalyDetector
 
-local ChaWatcher = script.Parent.Parent.Parent
-
 function AnomalyDetector:updateFullDataVector(Player: Player)
 	
 	self.DataCollector:updateFullDataVector(Player)
@@ -62,7 +60,7 @@ end
 
 function AnomalyDetector:createDataCollector()
 	
-	local DataCollector = require(ChaWatcher.SourceCodes.DataCollector).new(false)
+	local DataCollector = require(script.Parent.DataCollector).new(false)
 	
 	DataCollector:bindToHeartbeat(function(Player, fullDataVector)
 		
@@ -88,7 +86,7 @@ end
 
 function AnomalyDetector:createSupportVectorMachine(ModelParameters, kernelFunction, kernelParameters)
 	
-	local SVM =  require(ChaWatcher.AqwamProprietarySourceCodes.SupportVectorMachine).new(nil, nil, nil, kernelFunction, kernelParameters)
+	local SVM =  require(script.Parent.Parent.Parent.AqwamProprietarySourceCodes.SupportVectorMachine).new(nil, nil, nil, kernelFunction, kernelParameters)
 	
 	SVM:setModelParameters(ModelParameters)
 	

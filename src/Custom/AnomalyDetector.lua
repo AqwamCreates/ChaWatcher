@@ -6,6 +6,18 @@ AnomalyDetector.__index = AnomalyDetector
 
 local ChaWatcher = script.Parent.Parent.Parent
 
+function AnomalyDetector:updateFullDataVector(Player: Player)
+	
+	self.DataCollector:updateFullDataVector(Player)
+	
+end
+
+function AnomalyDetector:updateDataVectors(Player: Player, currentData, isNewData: boolean)
+
+	self.AnomalyDetector:updateDataVectors(Player, currentData, isNewData)
+
+end
+
 function AnomalyDetector:setPlayerPreviousDataVector(Player: Player, previousDataVector)
 
 	self.DataCollector:setPlayerPreviousDataVector(Player, previousDataVector)
@@ -147,12 +159,6 @@ end
 function AnomalyDetector:stop()
 
 	self.DataCollector:stop()
-
-end
-
-function AnomalyDetector:updateDataVectors(Player: Player, currentData, isNewData: boolean)
-
-	self.AnomalyDetector:updateDataVectors(Player, currentData, isNewData)
 
 end
 

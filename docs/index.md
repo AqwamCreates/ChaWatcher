@@ -27,6 +27,8 @@ If there are any issues for this library, don’t be afraid to reach out to me a
   * setPlayerCurrentDataVector()
 
   * setPlayerHasMissingData()
+ 
+  * updateDataVectors()
 
   * updateFullDataVector()
 

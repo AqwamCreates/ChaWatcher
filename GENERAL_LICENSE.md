@@ -22,7 +22,7 @@ NOW, THEREFORE, by using and possessing the Library, Licensee accepts and agrees
 
 2.1 Commercial Agreement with Roblox Corporation: Licensee and any party creating derivative works using the Library shall be expressly prohibited from entering into a commercial agreement with Roblox Corporation for the distribution, sale, or use of such derivative works.
 
-2.2 Free Distribution Prohibition: Licensee and any party creating derivative works using the Library shall be expressly prohibited from distributing the derivative works for free. Derivative works must be distributed under terms that require payment, whether by a fee, subscription, or other means.
+2.2 Free Distribution Prohibition: Licensee and any party creating derivative works using the Library shall be expressly prohibited from distributing the derivative works for Roblox Corporation.
 
 ## 3. No Warranty
 

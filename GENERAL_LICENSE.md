@@ -18,7 +18,7 @@ NOW, THEREFORE, by using and possessing the Software Library, Licensee accepts a
 
 1.2 Proprietary License: Licensor hereby grants Licensee a worldwide, non-exclusive, non-transferable, royalty-bearing, and revocable license to use the Software Library under the terms and conditions of the [Proprietary License Name], as attached in Exhibit B.
 
-2. Restrictions on Derivative Works
+## Restrictions on Derivative Works
 
 2.1 Commercial Agreement with Roblox Corporation: Licensee and any party creating derivative works using the Software Library shall be expressly prohibited from entering into a commercial agreement with Roblox Corporation for the distribution, sale, or use of such derivative works.
 

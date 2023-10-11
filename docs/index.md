@@ -18,7 +18,7 @@ You only need to collect normal (non-hacker) data. You can include outlier (hack
 
 ## Difference between original and custom versions:
 
-* Custom version allows you to call updateDataVector() for both DataCollector and AnomalyDetector outside of the module scripts.
+* Custom version allows you to call updateDataVector() and setPlayerHasMissingData() for both DataCollector and AnomalyDetector outside of the module scripts.
 
 * Custom version is an empty template.
 

@@ -8,6 +8,16 @@ DataCollector = {}
 
 DataCollector.__index = DataCollector
 
+function DataCollector:setPlayerHasMissingData(Player: player, hasMissingData: boolean)
+	
+	local UserId = Player.UserId
+
+	local stringUserId = tostring(UserId)
+	
+	self.PlayerHasMissingData[stringUserId] = hasMissingData
+	
+end
+
 function DataCollector:updateFullDataVector(Player)
 
 	local UserId = Player.UserId
@@ -59,35 +69,25 @@ function DataCollector:onPlayerRemoving(Player: Player)
 	self.PlayersPreviousData[stringUserId] = nil
 	
 	self.IsPlayerRecentlyJoined[stringUserId] = nil
+	
+	self.PlayerHasMissingData[stringUserId] = nil
 
 end
 
 function DataCollector:onHeartbeatForPlayer(Player, deltaTime)
 	
-	local isHumanoidDead = false
-
-	local success = pcall(function()
-
-		local Character = Player.Character
-
-		local test = Character.PrimaryPart
-
-		isHumanoidDead = (Character.Humanoid:GetState() == Enum.HumanoidStateType.Dead)
-
-	end)
-
-	local isMissingData = not success
-
-	local isNewData = isHumanoidDead or isMissingData
+	local stringUserId = tostring(Player.UserId)
 	
-	if isMissingData and self.OnMissingDataFunction then 
+	local hasMissingData = self.PlayerHasMissingData[stringUserId]
+	
+	if hasMissingData and self.OnMissingDataFunction then 
 
 		self.OnMissingDataFunction(Player) 
 		return
 
 	end
 
-	if not self.PlayersPreviousData[tostring(Player.UserId)] then return end
+	if not self.PlayersPreviousData[stringUserId] then return end
 
 	local dataVector = self:updateFullDataVector(Player)
 
@@ -234,6 +234,8 @@ function DataCollector.new(storeFullData: boolean, dataStoreKey: string)
 	NewDataCollector.FullData = {}
 	
 	NewDataCollector.IsPlayerRecentlyJoined = {}
+	
+	NewDataCollector.PlayerHasMissingData = {}
 
 	NewDataCollector.StoreFullData = storeFullData
 

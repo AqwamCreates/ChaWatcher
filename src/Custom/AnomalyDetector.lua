@@ -66,7 +66,7 @@ function AnomalyDetector:createDataCollector()
 		
 		local predictedValue = self.SupportVectorMachine:predict({fullDataVector}, true)[1][1]
 
-		local isOutlier = (predictedValue <= self.NormalThreshold)
+		local isOutlier = (predictedValue < self.NormalThreshold)
 		
 		if self.HeartbeatFunction then self.HeartbeatFunction(Player, predictedValue, fullDataVector) end
 		

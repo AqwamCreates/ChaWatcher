@@ -73,7 +73,7 @@ end
 
 function ModelCreator:saveModelOnline()
 	
-	if not self.AnomalyDetectorDataStoreKey then return false end
+	if not self.ModelCreatorDataStoreKey then return false end
 
 	local success
 
@@ -81,7 +81,7 @@ function ModelCreator:saveModelOnline()
 
 		success = pcall(function()
 
-			ModelCreatorDataStore:SetAsync(self.AnomalyDetectorDataStoreKey, self.Model)
+			ModelCreatorDataStore:SetAsync(self.ModelCreatorDataStoreKey, self.Model)
 
 		end)
 
@@ -139,7 +139,7 @@ function ModelCreator:getModel()
 
 	else
 
-		local Model = ModelCreatorDataStore:GetAsync(self.DataStoreKey)
+		local Model = ModelCreatorDataStore:GetAsync(self.ModelCreatorDataStoreKey)
 
 		return Model
 

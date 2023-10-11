@@ -34,6 +34,6 @@ If there are any issues for this library, don’t be afraid to reach out to me a
 
   * updateFullDataVector()
 
-* Custom version is an empty template.
+* Custom version is an empty template. Put what you want there!
 
 * That's really it...

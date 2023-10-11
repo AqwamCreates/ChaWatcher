@@ -1,176 +1,145 @@
-local DataStoreService = game:GetService("DataStoreService")
+local ModelCreatorDataStore = game:GetService("DataStoreService"):GetDataStore("AqwamChaWatcherModelCreatorDataStore")
 
-local DataCollectorDataStore = DataStoreService:GetDataStore("AqwamChaWatcherDataCollectorDataStore")
+AnomalyDetector = {}
 
-local ModelCreatorDataStore = DataStoreService:GetDataStore("AqwamChaWatcherModelCreatorDataStore")
+AnomalyDetector.__index = AnomalyDetector
 
-ModelCreator = {}
+function AnomalyDetector:getPlayerDataVectors(Player)
 
-ModelCreator.__index = ModelCreator
+	return self.DataCollector:getPlayerDataVectors(Player)
 
-local ChaWatcher = script.Parent.Parent.Parent
+end
 
-local function createSupportVectorMachine()
+function AnomalyDetector:bindToOutlierFound(functionToRun)
 	
-	local SupportVectorMachine = require(ChaWatcher.AqwamProprietarySourceCodes.SupportVectorMachine).new()
-	
-	SupportVectorMachine:setWaitDurations(0.3)
-	
-	return SupportVectorMachine
+	self.OutlierFoundFunction = functionToRun
 	
 end
 
-function ModelCreator.new(useOnlineData: boolean, dataCollectorDataStoreKey: string, anomalyDetectorDataStoreKey: string)
-	
-	local NewModelCreator = {}
-	
-	setmetatable(NewModelCreator, ModelCreator)
-	
-	dataCollectorDataStoreKey = dataCollectorDataStoreKey or "default"
-	
-	anomalyDetectorDataStoreKey = anomalyDetectorDataStoreKey or "default"
+function AnomalyDetector:bindToHeartbeat(functionToRun)
 
-	if (typeof(dataCollectorDataStoreKey) ~= "string") then error("Data collector datastore key is not a string value!") end
+	self.HeartbeatFunction = functionToRun
+
+end
+
+function AnomalyDetector:bindToMissingData(functionToRun)
 	
-	if (typeof(anomalyDetectorDataStoreKey) ~= "string") then error("Anomaly detector datastore key is not a string value!") end
+	self.MissingDataFunction = functionToRun
+
+end
+
+function AnomalyDetector:createDataCollector()
 	
-	NewModelCreator.UseOnlineData = useOnlineData
+	local DataCollector = require(script.Parent.DataCollector).new(false)
 	
-	NewModelCreator.DataCollectorDataStoreKey = dataCollectorDataStoreKey
+	DataCollector:bindToHeartbeat(function(Player, fullDataVector)
+		
+		local predictedValue = self.SupportVectorMachine:predict({fullDataVector}, true)[1][1]
+
+		local isOutlier = (predictedValue <= self.NormalThreshold)
+		
+		if self.HeartbeatFunction then self.HeartbeatFunction(Player, predictedValue, fullDataVector) end
+		
+		if isOutlier and self.OutlierFoundFunction then self.OutlierFoundFunction(Player, predictedValue, fullDataVector) end
+
+	end)
+
+	DataCollector:bindToMissingData(function(Player)
+
+		if self.MissingDataFunction then self.MissingDataFunction(Player) end 
+
+	end)
 	
-	NewModelCreator.AnomalyDetectorDataStoreKey = dataCollectorDataStoreKey
-	
-	NewModelCreator.Model = {}
-	
-	NewModelCreator.SupportVectorMachine = createSupportVectorMachine()
-	
-	return NewModelCreator
+	return DataCollector
 	
 end
 
-function ModelCreator:setParameters(maxNumberOfIterations, cValue, targetCost, kernelFunction, kernelParameters)
+function AnomalyDetector:createSupportVectorMachine(ModelParameters, kernelFunction, kernelParameters)
 	
-	self.Model = {}
+	local SVM =  require(script.Parent.Parent.Parent.AqwamProprietarySourceCodes.SupportVectorMachine).new(nil, nil, nil, kernelFunction, kernelParameters)
 	
-	self.Model.kernelFunction = kernelFunction
-	self.Model.kernelParameters = kernelParameters
+	SVM:setModelParameters(ModelParameters)
 	
-	self.SupportVectorMachine:setParameters(maxNumberOfIterations, cValue, targetCost, kernelFunction, kernelParameters)
+	return SVM
 	
 end
 
-local function fetchData(useOnlineData: boolean, key: string)
+local function fetchSettings(useOnlineModel: boolean, key: string)
+	
+	if useOnlineModel then
 
-	if useOnlineData then
-
-		return DataCollectorDataStore:GetAsync(key)
+		return ModelCreatorDataStore:GetAsync(key)
 
 	else
 
-		return require(script.Parent.OfflineData)[key]
+		return require(script.Parent.OfflineModelSettings)[key]
 
 	end
-
-end
-
-function ModelCreator:saveModelOnline()
-	
-	if not self.AnomalyDetectorDataStoreKey then return false end
-
-	local success
-
-	repeat
-
-		success = pcall(function()
-
-			ModelCreatorDataStore:SetAsync(self.AnomalyDetectorDataStoreKey, self.Model)
-
-		end)
-
-		task.wait(0.1)
-
-	until success
-
-	print("Model has been saved!")
-
-	return true
 	
 end
 
-function ModelCreator:train(numberOfDataToUse: number)
+function AnomalyDetector.new(normalThreshold: number, useOnlineModel: boolean, key: string)
 	
-	local data = fetchData(self.UseOnlineData, self.DataCollectorDataStoreKey)
+	local NewAnomalyDetector = {}
 	
-	if not data then error("No data!") end
+	setmetatable(NewAnomalyDetector, AnomalyDetector)
 	
-	if (numberOfDataToUse > #data) then error("Number of data to use exceeds the number of data!") end
+	key = key or "default"
 	
-	while (#data > numberOfDataToUse) do
+	if (typeof(key) ~= "string") then error("Key is not a string value!") end
+	
+	local Settings = fetchSettings(useOnlineModel, key)
+	
+	if not Settings then error("No Settings Found!") end
+	
+	normalThreshold = normalThreshold or Settings["normalThreshold"]
+
+	if (typeof(normalThreshold) ~= "number") then error("Normal threshold is not a number value!") end
+
+	NewAnomalyDetector.NormalThreshold = normalThreshold
 		
-		local randomIndex = Random.new():NextInteger(1, #data)
+	local ModelParameters = Settings["ModelParameters"]
+	
+	local kernelFunction = Settings["kernelFunction"]
 		
-		table.remove(data, randomIndex)
-		
-	end
+	local kernelParameters = Settings["kernelParameters"]
 	
-	task.wait(0.3)
+	if not ModelParameters then error("No Model Parameters Found!") end
 	
-	local labels = {}
+	if not kernelFunction then warn("No Kernel Function Found! Using Default Function!") end
 	
-	for i = 1, #data, 1 do
-		
-		table.insert(labels, {1})
-		
-	end
+	if not kernelParameters then warn("No Kernel Parameters Found! Using Default Values!") end
 	
-	task.wait(0.3)
+	NewAnomalyDetector.SupportVectorMachine = NewAnomalyDetector:createSupportVectorMachine(ModelParameters, kernelFunction, kernelParameters)
 	
-	self.SupportVectorMachine:train(data, labels)
+	NewAnomalyDetector.DataCollector = NewAnomalyDetector:createDataCollector()
 	
-	self.Model.ModelParameters = self.SupportVectorMachine:getModelParameters()
-	
-	return self.Model
+	return NewAnomalyDetector
 	
 end
 
-function ModelCreator:getModel()
+function AnomalyDetector:start()
 	
-	if self.Model then
-
-		return self.Model
-
-	else
-
-		local Model = ModelCreatorDataStore:GetAsync(self.DataStoreKey)
-
-		return Model
-
-	end 
+	self.DataCollector:start()
 	
 end
 
-function ModelCreator:loadModelFromOnline()
+function AnomalyDetector:stop()
+
+	self.DataCollector:stop()
+
+end
+
+function AnomalyDetector:destroy()
 	
-	local success = false
+	self.DataCollector:destroy()
 	
-	repeat
-		
-		success = pcall(function()
-			
-			self.Model = ModelCreatorDataStore:GetAsync(self.DataStoreKey)
-			
-		end)
-		
-		task.wait(0.1)
-		
-	until success
-	
-	self.SupportVectorMachine:setModelParameters(self.Model.ModelParameters)
-	
-	self.SupportVectorMachine:setParameters(nil, nil, nil, self.Model.kernelFunction, self.Model.kernelParameters)
-	
-	print("Loaded model!")
+	self.SupportVectorMachine:destroy()
+
+	table.clear(self)
+
+	AnomalyDetector = nil
 	
 end
 
-return ModelCreator
+return AnomalyDetector

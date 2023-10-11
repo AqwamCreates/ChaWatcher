@@ -8,6 +8,26 @@ DataCollector = {}
 
 DataCollector.__index = DataCollector
 
+function DataCollector:setPlayerPreviousDataVector(Player: Player, previousDataVector)
+	
+	local UserId = Player.UserId
+
+	local stringUserId = tostring(UserId)
+	
+	self.PlayersPreviousData[stringUserId] = previousDataVector
+	
+end
+
+function DataCollector:setPlayerCurrentDataVector(Player: Player, currentDataVector)
+
+	local UserId = Player.UserId
+
+	local stringUserId = tostring(UserId)
+
+	self.PlayersCurrentData[stringUserId] = currentDataVector
+
+end
+
 function DataCollector:setPlayerHasMissingData(Player: player, hasMissingData: boolean)
 	
 	local UserId = Player.UserId

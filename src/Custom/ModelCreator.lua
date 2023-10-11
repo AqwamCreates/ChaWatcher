@@ -2,7 +2,7 @@ local DataStoreService = game:GetService("DataStoreService")
 
 local DataCollectorDataStore = DataStoreService:GetDataStore("AqwamChaWatcherDataCollectorDataStore")
 
-local AnomalyDetectorDataStore = DataStoreService:GetDataStore("AqwamChaWatcherAnomalyDetectorDataStore")
+local ModelCreatorDataStore = DataStoreService:GetDataStore("AqwamChaWatcherModelCreatorDataStore")
 
 ModelCreator = {}
 
@@ -83,7 +83,7 @@ function ModelCreator:saveModelOnline()
 
 		success = pcall(function()
 
-			AnomalyDetectorDataStore:SetAsync(self.AnomalyDetectorDataStoreKey, self.Model)
+			ModelCreatorDataStore:SetAsync(self.AnomalyDetectorDataStoreKey, self.Model)
 
 		end)
 
@@ -134,9 +134,45 @@ function ModelCreator:train(numberOfDataToUse: number)
 end
 
 function ModelCreator:getModel()
-	
-	return self.Model
-	
+
+	if self.Model then
+
+		return self.Model
+
+	else
+
+		local Model = ModelCreatorDataStore:GetAsync(self.DataStoreKey)
+
+		return Model
+
+	end 
+
+end
+
+function ModelCreator:loadModelFromOnline()
+
+	local success = false
+
+	repeat
+
+		success = pcall(function()
+
+			self.Model = ModelCreatorDataStore:GetAsync(self.DataStoreKey)
+
+		end)
+
+		task.wait(0.1)
+
+	until success
+
+	if self.Model == nil then warn("No model found!") return end
+
+	self.SupportVectorMachine:setModelParameters(self.Model.ModelParameters)
+
+	self.SupportVectorMachine:setParameters(nil, nil, nil, self.Model.kernelFunction, self.Model.kernelParameters)
+
+	print("Loaded model!")
+
 end
 
 return ModelCreator

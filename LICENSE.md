@@ -27,7 +27,7 @@ This license applies to the following named files located in the specified folde
   * OfflineModelSettings
   	
  This license will not be granted to Roblox Corporation or any of its employees, regardless it is a derivative of the Library or not. A separate commercial agreement must be made between the 
- Licensor and Roblox Corporation in order to use the Library.
+ Licensor and Roblox Corporation in order to use or possess the Library.
 
 THE LIBRARY IS PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
 FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, 

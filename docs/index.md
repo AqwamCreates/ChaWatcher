@@ -20,7 +20,7 @@ If there are any issues for this library, don’t be afraid to reach out to me a
 
 ## Difference between original and custom versions:
 
-* Custom version has these functions for both DataCollector and AnomalyDetector:
+* Custom version has these functions for both DataCollector and AnomalyDetector that can be called outside of their module scripts:
 
   * setPlayerPreviousDataVector()
 

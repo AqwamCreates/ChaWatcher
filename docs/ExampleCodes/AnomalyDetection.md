@@ -10,7 +10,7 @@ local ChaWatcher = require(ServerScriptService.ChaWatcher)
 
 local AnomalyDetector = ChaWatcher.Original.DataCollector.new(0.5, false)
 
-AnomalyDetector:bindToOutlierFound(function(Player, predictedValue, fullDataVector) -- Runs a function if player's data is an outlier
+AnomalyDetector:bindToOutlierFound(function(Player, predictedValue, fullDataVector) -- Runs a function if player's data is an outlier.
 
 	print(Player.Name .. " has an outlier data!")
 

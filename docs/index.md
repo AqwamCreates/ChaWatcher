@@ -1,6 +1,6 @@
 # Welcome To ChaWatcher's Documentation!
 
-![ChaWatcherIconSmall](../icons/ChaWatcherIconSmall.png)
+![ChaWatcherIconSmall](https://github.com/AqwamCreates/ChaWatcher/assets/67371914/42a0743d-63bc-422d-a4e1-942d0e71e44f)
 
 ChaWatcher is an anti-cheat / anomaly detector that uses machine-learning to detect outlier behaviours. It uses One-Class Support Vector Machine from my [DataPredict](https://aqwamcreates.github.io/DataPredict/) library.
 

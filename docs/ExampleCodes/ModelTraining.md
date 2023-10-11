@@ -26,5 +26,9 @@ local kernelFunction = Model.kernelFunction
 local kernelParameters = Model.kernelParameters
 local ModelParameters = Model.ModelParameters
 
+MatrixL:printMatrixWithComma(ModelParameters)
+
 ModelCreator:saveModelOnline()
+
+ModelCreator:loadModelOnline()
 ```

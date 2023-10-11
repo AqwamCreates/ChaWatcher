@@ -191,7 +191,7 @@ end
 
 function DataCollector:onHeartbeat(deltaTime)
 	
-	for _, Player in Players:GetChildren() do
+	for _, Player in Players:GetPlayers() do
 
 		if (Player == nil) then continue end
 		

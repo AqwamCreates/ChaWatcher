@@ -14,8 +14,6 @@ AnomalyDetector:bindToOutlierFound(function(Player, predictedValue, fullDataVect
 
 	print(Player.Name .. " has an outlier data!")
 
-	local currentDataVector, previousDataVector = AnomalyDetector:getPlayerDataVectors()
-
 end)
 
 AnomalyDetector:bindToHeartbeat(function(Player, predictedValue, fullDataVector) -- Runs a function on every heartbeat.

@@ -1,6 +1,6 @@
 ## Dual License Agreement
 
-This Irrevocable Dual License Agreement ("Agreement") is automatically and irrevocably in effect upon the use and possession of the [Library Name] (the "Library") by any individual or entity ("Licensee") and sets forth the terms and conditions for the Licensee's use of the Library, which includes both open-source and proprietary components. Licensee acknowledges that this Agreement cannot be removed or modified.
+This Irrevocable Dual License Agreement ("Agreement") is automatically and irrevocably in effect upon the use and possession of the ChaWatcher software library (the "Library") by any individual or entity ("Licensee") and sets forth the terms and conditions for the Licensee's use of the Library, which includes both open-source and proprietary components. Licensee acknowledges that this Agreement cannot be removed or modified.
 
 Recitals
 
@@ -22,7 +22,7 @@ NOW, THEREFORE, by using and possessing the Library, Licensee accepts and agrees
 
 2.1 Commercial Agreement with Roblox Corporation: Licensee and any party creating derivative works using the Library shall be expressly prohibited from entering into a commercial agreement with Roblox Corporation for the distribution, sale, or use of such derivative works.
 
-2.2 Free Distribution Prohibition: Licensee and any party creating derivative works using the Library shall be expressly prohibited from distributing the derivative works for Roblox Corporation.
+2.2 Distribution Prohibition To Roblox: Licensee and any party creating derivative works using the Library shall be expressly prohibited from distributing the derivative works for Roblox Corporation either for free or by sale.
 
 ## 3. No Warranty
 
@@ -40,4 +40,4 @@ NOW, THEREFORE, by using and possessing the Library, Licensee accepts and agrees
 
 6.1 This Agreement shall be governed by and construed in accordance with the laws of a jurisdiction selected at the sole discretion of the Licensor. In the absence of a choice by the Licensor, the laws of Malaysia shall apply.
 
-By using and possessing the Library, Licensee acknowledges and accepts the terms and conditions of this Agreement, including the use of both open-source and proprietary licenses for different components and the restrictions on derivative works regarding commercial agreements with Roblox and the prohibition on free distribution.
+By using and possessing the Library, Licensee acknowledges and accepts the terms and conditions of this Agreement, including the use of both open-source and proprietary licenses for different components and the restrictions on derivative works regarding commercial agreements with Roblox and the prohibition on distribution.

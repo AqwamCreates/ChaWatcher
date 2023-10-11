@@ -8,7 +8,7 @@ DataCollector = {}
 
 DataCollector.__index = DataCollector
 
-function DataCollector:updateDataVector(Player)
+function DataCollector:updateFullDataVector(Player)
 
 	local UserId = Player.UserId
 
@@ -32,7 +32,7 @@ function DataCollector:updateDataVector(Player)
 
 	local distance = changeInPosition.Magnitude
 
-	local dataVector = {
+	local fullDataVector = {
 
 		changeInPosition.X, changeInPosition.Y, changeInPosition.Z,
 
@@ -46,7 +46,7 @@ function DataCollector:updateDataVector(Player)
 
 	}
 
-	return dataVector
+	return fullDataVector
 
 end
 
@@ -76,7 +76,7 @@ local function checkIfIsFlying(Character: Model)
 
 end
 
-function DataCollector:updateFullDataVector(Player: Player, deltaTime: number, isNewData: boolean)
+function DataCollector:updateDataVectors(Player: Player, deltaTime: number, isNewData: boolean)
 
 	local UserId = Player.UserId
 
@@ -170,18 +170,18 @@ function DataCollector:onHeartbeatForPlayer(Player, deltaTime)
 
 	local isNewData = isHumanoidDead or isMissingData
 	
-	if isMissingData and self.OnMissingDataFunction then 
+	if isMissingData then 
 
-		self.OnMissingDataFunction(Player) 
+		if self.OnMissingDataFunction then self.OnMissingDataFunction(Player) end
 		return
 
 	end
 
-	self:updateFullDataVector(Player, deltaTime, isNewData)
+	self:updateDataVectors(Player, deltaTime, isNewData)
 
 	if not self.PlayersPreviousData[tostring(Player.UserId)] then return end
 
-	local dataVector = self:updateDataVector(Player)
+	local dataVector = self:updateFullDataVector(Player)
 
 	if self.StoreFullData then table.insert(self.FullData, dataVector) end
 
@@ -215,7 +215,7 @@ function DataCollector:createConnectionsArray()
 		
 		self.IsPlayerRecentlyJoined[stringUserId] = true
 		
-		self:updateFullDataVector(Player, 0, true)
+		self:updateDataVectors(Player, 0, true)
 
 		Player.CharacterAdded:Connect(function()
 			

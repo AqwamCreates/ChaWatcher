@@ -6,6 +6,12 @@ AnomalyDetector.__index = AnomalyDetector
 
 local ChaWatcher = script.Parent.Parent.Parent
 
+function AnomalyDetector:setPlayerHasMissingData(Player: player, hasMissingData: boolean)
+
+	self.DataCollector:setPlayerHasMissingData(Player, hasMissingData)
+
+end
+
 function AnomalyDetector:getPlayerDataVectors(Player)
 
 	return self.DataCollector:getPlayerDataVectors(Player)

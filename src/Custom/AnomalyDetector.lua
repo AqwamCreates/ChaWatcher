@@ -1,4 +1,4 @@
-local AnomalyDetectorDataStore = game:GetService("DataStoreService"):GetDataStore("AqwamChaWatcherAnomalyDetectorDataStore")
+local ModelCreatorDataStore = game:GetService("DataStoreService"):GetDataStore("AqwamChaWatcherModelCreatorDataStore")
 
 AnomalyDetector = {}
 
@@ -100,7 +100,7 @@ local function fetchSettings(useOnlineModel: boolean, key: string)
 	
 	if useOnlineModel then
 
-		return AnomalyDetectorDataStore:GetAsync(key)
+		return ModelCreatorDataStore:GetAsync(key)
 
 	else
 

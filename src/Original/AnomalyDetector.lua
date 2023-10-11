@@ -1,10 +1,10 @@
-local AnomalyDetectorDataStore = game:GetService("DataStoreService"):GetDataStore("AqwamChaWatcherAnomalyDetectorDataStore")
+local ModelCreatorDataStore = game:GetService("DataStoreService"):GetDataStore("AqwamChaWatcherModelCreatorDataStore")
 
 AnomalyDetector = {}
 
 AnomalyDetector.__index = AnomalyDetector
 
-local ChaWatcher = script.Parent.Parent
+local ChaWatcher = script.Parent.Parent.Parent
 
 function AnomalyDetector:getPlayerDataVectors(Player)
 
@@ -70,11 +70,11 @@ local function fetchSettings(useOnlineModel: boolean, key: string)
 	
 	if useOnlineModel then
 
-		return AnomalyDetectorDataStore:GetAsync(key)
+		return ModelCreatorDataStore:GetAsync(key)
 
 	else
 
-		return require(ChaWatcher.SourceCodes.OfflineModelSettings)[key]
+		return require(script.Parent.OfflineModelSettings)[key]
 
 	end
 	

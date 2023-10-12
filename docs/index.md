@@ -40,7 +40,7 @@ If there are any issues for this library, don’t be afraid to reach out to me a
 
 ## Tips:
 
-* Use "radialBasisFunction" as your first choice of kernel function for training models. If the accuracy is weak, then use other kernel functions
+* Use "radialBasisFunction" as your first choice of kernel function for training models. If the accuracy is weak, then use other kernel functions.
 
 * Set the c value to very small if you want majority of your data points be a "normal" data.
 

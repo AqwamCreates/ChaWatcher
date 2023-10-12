@@ -147,7 +147,7 @@ function ModelCreator:getModel()
 	
 end
 
-function ModelCreator:loadModelFromOnline()
+function ModelCreator:loadModelOnline()
 	
 	local success = false
 	

@@ -27,7 +27,7 @@ This license applies to the following named files located in the specified folde
   * OfflineModelSettings
 
 This license will not be granted to Roblox Corporation or any of its employees, regardless it is a derivative of the Library or not. A separate commercial agreement must 
-be made between the Licensor and Roblox Corporation in order to use or possess the Library.
+be made between the Aqwam Harish Aiman and Roblox Corporation in order to use or possess the Library.
   	
 The licensee also agrees not to sell, resell, distribute, sublicense, or otherwise transfer Library, in whole or in part, to Roblox Corporation or any of its employees, whether for profit or not.
   	

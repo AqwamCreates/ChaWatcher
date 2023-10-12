@@ -8,7 +8,9 @@ local MatrixL = require(ServerScriptService.MatrixL)
 
 local ChaWatcher = require(ServerScriptService.ChaWatcher)
 
-local AnomalyDetector = ChaWatcher.Original.AnomalyDetector.new(0.5, false) -- First argument is the normal threshold. If the predicted value from the model is higher than this, the player is considered "normal".
+local AnomalyDetector = ChaWatcher.Original.AnomalyDetector.new(0.5, false)
+
+-- First argument is the normal threshold. If the predicted value is less than the normal threshold, then the player is considered not nornal.
 
 AnomalyDetector:bindToOutlierFound(function(Player, predictedValue, fullDataVector) -- Runs a function if player's data is an outlier.
 

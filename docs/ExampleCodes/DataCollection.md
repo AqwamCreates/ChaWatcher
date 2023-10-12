@@ -18,7 +18,7 @@ DataCollector:bindToHeartbeat(function(Player, fullDataVector) -- Runs a functio
 
 end)
 
-DataCollector:bindToMissingData(function(Player) -- Runs a function if cannot create data vector.
+DataCollector:bindToMissingData(function(Player) -- Runs a function if cannot create a data vector.
 
 	print(Player.Name .. " has missing data!")
 

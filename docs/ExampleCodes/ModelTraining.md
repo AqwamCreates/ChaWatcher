@@ -30,5 +30,5 @@ MatrixL:printMatrixWithComma(ModelParameters)
 
 ModelCreator:saveModelOnline()
 
-ModelCreator:loadModelFromOnline()
+ModelCreator:loadModelOnline()
 ```

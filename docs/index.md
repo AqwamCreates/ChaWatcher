@@ -10,6 +10,8 @@ You only need to collect normal (non-hacker) data. You can include outlier (hack
 
 If there are any issues for this library, don’t be afraid to reach out to me at my [LinkedIn](https://www.linkedin.com/in/aqwam-harish-aiman/) or in this DevForum thread.
 
+You can get the library from Roblox's marketplace [here](https://create.roblox.com/marketplace/asset/15042133614/ChaWatcher)!
+
 ## Example codes (with explanations):
 
 ### Original Version

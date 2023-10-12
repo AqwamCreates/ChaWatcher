@@ -2,7 +2,7 @@ return {
 	
 	["default"] = {
 		
-		normalThreshold = 0.30,
+		normalThreshold = 0.25,
 		
 		kernelFunction = "radialBasisFunction",
 		

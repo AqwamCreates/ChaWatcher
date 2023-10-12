@@ -18,16 +18,20 @@ This license applies to the following named files located in the specified folde
   * OfflineData
   * OfflineModelSettings
 
- * Folder: ChaWatcher/SourceCodes/Custom
+* Folder: ChaWatcher/SourceCodes/Custom
 
-  	* AnomalyDetector
-  	* DataCollector
-  	* ModelCreator
-  	* OfflineData
-  	* OfflineModelSettings
+  * AnomalyDetector
+  * DataCollector
+  * ModelCreator
+  * OfflineData
+  * OfflineModelSettings
+
+This license will not be granted to Roblox Corporation or any of its employees, regardless it is a derivative of the Library or not. A separate commercial agreement must 
+be made between the Licensor and Roblox Corporation in order to use or possess the Library.
   	
-  This license will not be granted to Roblox Corporation or any of its employees, regardless it is a derivative of the Library or not. A separate commercial agreement must 
-  	be made between the Licensor and Roblox Corporation in order to use or possess the Library.
+The licensee also agrees not to sell, resell, distribute, sublicense, or otherwise transfer Library, in whole or in part, to Roblox Corporation, whether for profit or not.
+  	
+The licensee also agrees not to modify, adapt, translate, reverse engineer, decompile, disassemble, or create derivative works of the Library for Roblox Corporation
 
 THE LIBRARY IS PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
 FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, 

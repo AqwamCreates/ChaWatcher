@@ -24,7 +24,7 @@ AnomalyDetector:bindToHeartbeat(function(Player, predictedValue, fullDataVector)
 
 end)
 
-AnomalyDetector:bindToMissingData(function(Player) -- Runs a function if cannot create data vector.
+AnomalyDetector:bindToMissingData(function(Player) -- Runs a function if cannot create a data vector.
 
 	print(Player.Name .. " has missing data!")
 

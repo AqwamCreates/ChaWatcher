@@ -116,13 +116,13 @@ function AnomalyDetector:onPlayerAdded(Player: Player)
 	
 end
 
-function AnomalyDetector:onPredictedValueReceived(Player, TargetPlayer: Player, predictedValue)
+function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, WatchedPlayer: Player, predictedValue)
 	
-	if ((typeof(TargetPlayer) ~= "Player") or (typeof(predictedValue) ~= "number")) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(Player) return end
+	if ((typeof(WatchedPlayer) ~= "Player") or (typeof(predictedValue) ~= "number")) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end
 
-	local targetPlayerStringUserId = tostring(TargetPlayer.UserId)
+	local targetPlayerStringUserId = tostring(WatchedPlayer.UserId)
 
-	self.ReceivedPredictedValues[targetPlayerStringUserId][tostring(Player.UserId)] = predictedValue
+	self.ReceivedPredictedValues[targetPlayerStringUserId][tostring(WatchingPlayer.UserId)] = predictedValue
 
 	local averageDifference = 0
 	
@@ -181,9 +181,9 @@ function AnomalyDetector:createConnectionsArray()
 
 	end)
 
-	local SendPredictedValueRemoteEventConnection = SendPredictedValueRemoteEvent.OnServerEvent:Connect(function(Player, TargetPlayer, predictedValue)
+	local SendPredictedValueRemoteEventConnection = SendPredictedValueRemoteEvent.OnServerEvent:Connect(function(WatchingPlayer, WatcherPlayer, predictedValue)
 
-		self:onPredictedValueReceived(Player, TargetPlayer, predictedValue)
+		self:onPredictedValueReceived(WatchingPlayer, WatcherPlayer, predictedValue)
 
 	end)
 

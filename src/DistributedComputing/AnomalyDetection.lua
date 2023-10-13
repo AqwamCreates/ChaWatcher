@@ -92,9 +92,11 @@ function AnomalyDetector:onPlayerAdded(Player: Player)
 
 	local otherStringUserIdArray = self:getStringUserIdsWithEmptyWatchSlots(stringUserId)
 	
+	local stringUserIdToWatchArray = {}
+	
 	local numberOfWatchedBy = 0
 	
-	repeat
+	while (numberOfWatchedBy < self.MaxPlayersToWatchPerPlayer) and (#otherStringUserIdArray >= 0) do
 		
 		local randomIndex = Random.new():NextInteger(1, #otherStringUserIdArray)
 		
@@ -112,7 +114,23 @@ function AnomalyDetector:onPlayerAdded(Player: Player)
 		
 		numberOfWatchedBy += 1
 		
-	until (numberOfWatchedBy >= self.MaxPlayersToWatchPerPlayer) or (#otherStringUserIdArray == 0)
+	end 
+	
+	for otherStringUserId, watchedByPlayerStringUserIds in self.ReceivedPredictedValues do
+		
+		local numberOfPlayersWatchedByForOtherPlayer = 0
+		
+		for watchedByPlayerStringUserId, otherPredictedValue in watchedByPlayerStringUserIds do numberOfPlayersWatchedByForOtherPlayer += 1 end
+		
+		if (numberOfPlayersWatchedByForOtherPlayer >= self.MaxPlayersToWatchPerPlayer) then continue end
+		
+		table.insert(stringUserIdToWatchArray, otherStringUserId)
+		
+	end
+	
+	self.PlayerWatching[stringUserId] = stringUserIdToWatchArray
+	
+	SetPlayerToWatchRemoteEvent:FireClient(Player, stringUserIdToWatchArray)
 	
 end
 

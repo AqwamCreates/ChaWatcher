@@ -317,7 +317,7 @@ function AnomalyDetector:start()
 
 	self.ConnectionsArray = self:createConnectionsArray()
 
-	ActivateClientRemoteEvent:FireAllClients(true)
+	ActivateClientRemoteEvent:FireAllClients(true, self.Settings)
 
 end
 

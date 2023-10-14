@@ -2,8 +2,6 @@ local Players = game:GetService("Players")
 
 local RunService = game:GetService("RunService")
 
-
-
 local ModelCreatorDataStore = game:GetService("DataStoreService"):GetDataStore("AqwamChaWatcherModelCreatorDataStore")
 
 local SendPredictedValueRemoteEvent: RemoteEvent
@@ -283,7 +281,7 @@ function AnomalyDetector.new(maxPlayersToWatchPerPlayer: number, normalThreshold
 	
 	NewAnomalyDetector.ReceivedPredictedValues = {}
 
-	local RemoteEvents = require(script.Parent.ChaWatcherClientSetup):setup()
+	local RemoteEvents = require(script.Parent.DistributedComputingSetup):setup()
 	
 	ActivateClientAnomalyDetectorRemoteEvent = RemoteEvents.ActivateClientAnomalyDetectorRemoteEvent
 	

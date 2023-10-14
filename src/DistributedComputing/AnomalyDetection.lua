@@ -156,9 +156,11 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, Watche
 
 	end
 	
-	if (#watchedByPlayerArray > 1) then
+	local numberOfWatchingPlayers = #watchedByPlayerArray
+	
+	if (numberOfWatchingPlayers > 1) then
 		
-		averageDifference /= (#watchedByPlayerArray - 1)
+		averageDifference /= (numberOfWatchingPlayers - 1)
 		
 	end
 

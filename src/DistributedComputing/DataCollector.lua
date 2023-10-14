@@ -78,7 +78,7 @@ function DataCollector.new(dataStoreKey: string)
 
 	NewDataCollector.DataStoreKey = dataStoreKey
 	
-	local RemoteEvents = require(script.Parent.ChaWatcherClientSetup):setup()
+	local RemoteEvents = require(script.Parent.DistributedComputingSetup):setup()
 	
 	ActivateClientDataCollectorRemoteEvent = RemoteEvents.ActivateClientDataCollectorRemoteEvent
 	

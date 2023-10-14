@@ -197,27 +197,27 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 	
 	local averageDifference = 0
 	
-	local watchedByPlayerArray = {}
+	local watchedByPlayerStringUserIdsArray = {}
 
 	for watchedByPlayerStringUserId, otherPredictedValue in watchedPlayerReceivedPredictedValues do
 		
 		if (watchedByPlayerStringUserId == watchingPlayerStringUserId) and (numberOfPlayersInServer > 1) then continue end
 		
-		local PlayerToSet = convertStringUserIdToPlayer(watchedByPlayerStringUserId)
+		local WatchingByPlayer = convertStringUserIdToPlayer(watchedByPlayerStringUserId)
 
-		if not PlayerToSet then continue end
+		if not WatchingByPlayer then continue end
 		
-		if (PlayerToSet:GetNetworkPing() > 1) then continue end
+		if (WatchingByPlayer:GetNetworkPing() > 1) then continue end
 
 		if (typeof(otherPredictedValue) ~= "number") then continue end
 
 		averageDifference += math.abs(predictedValue - otherPredictedValue)
 		
-		table.insert(watchedByPlayerArray, watchedByPlayerStringUserId)
+		table.insert(watchedByPlayerStringUserIdsArray, watchedByPlayerStringUserId)
 
 	end
 	
-	local numberOfWatchingPlayers = #watchedByPlayerArray
+	local numberOfWatchingPlayers = #watchedByPlayerStringUserIdsArray
 	
 	if (numberOfWatchingPlayers > 1) then
 		
@@ -227,22 +227,23 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 
 	if (averageDifference > self.MaxPredictedValuesDifferenceAverage) then
 		
-		local playersArray = {}
+		local watchedByPlayerArray = {}
 		
 		local predictedValuesArray = {}
 		
 		for watchedByPlayerStringUserId, otherPredictedValue in watchedPlayerReceivedPredictedValues do
 			
-			local PlayerToSet = convertStringUserIdToPlayer(watchedByPlayerStringUserId)
+			local WatchingByPlayer = convertStringUserIdToPlayer(watchedByPlayerStringUserId)
 				
-			if not PlayerToSet then continue end
+			if not WatchingByPlayer then continue end
 				
-			table.insert(playersArray, PlayerToSet)
+			table.insert(watchedByPlayerArray, WatchingByPlayer)
+			
 			table.insert(predictedValuesArray, otherPredictedValue)
 			
 		end
 		
-		self.AbnormalPredictedValuesFunction(WatchedPlayer, playersArray, predictedValuesArray)
+		self.AbnormalPredictedValuesFunction(WatchedPlayer, watchedByPlayerArray, predictedValuesArray)
 		
 	else
 		

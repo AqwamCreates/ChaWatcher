@@ -1,3 +1,5 @@
+local RunService = game:GetService("RunService")
+
 local StarterPlayer = game:GetService("StarterPlayer")
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -14,13 +16,13 @@ local SendFullDataVectorRemoteEvent = ChaWatcherDistributedComputing.SendFullDat
 
 local SetPlayerToWatchRemoteEvent = ChaWatcherDistributedComputing.SetPlayerToWatchRemoteEvent
 
+local SupportVectorMachine = require(script.AqwamProprietarySourceCodes.SupportVectorMachine).new()
+
 local PlayersPreviousData = {}
 
 local PlayersCurrentData = {}
 
 local PlayerToTrack = {}
-
-local Model
 
 local function updateFullDataVector(Player)
 
@@ -152,10 +154,10 @@ local function updateDataVectors(Player: Player, deltaTime: number, isNewData: b
 
 end
 
-local function onSetPlayerToTrackRemoteEventConnection()
+local function onActivateClientAnomalyDetectorRemoteEventConnection(isActivated, ReceivedModel)
 	
-	
+	SupportVectorMachine:setParameters(nil, nil, nil, ReceivedModel.kernelFunction, ReceivedModel.kernelParameters)
 	
 end
 
-SetPlayerToTrackRemoteEvent.OnClientEvent:Connect(onSetPlayerToTrackRemoteEventConnection)
+ActivateClientAnomalyDetectorRemoteEvent.OnClientEvent:Connect(onActivateClientAnomalyDetectorRemoteEventConnection)

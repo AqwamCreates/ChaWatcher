@@ -8,9 +8,11 @@ local MatrixL = require(ServerScriptService.MatrixL)
 
 local ChaWatcher = require(ServerScriptService.ChaWatcher)
 
-local AnomalyDetector = ChaWatcher.DistributedComputing.AnomalyDetector.new(0.5, false)
+local AnomalyDetector = ChaWatcher.DistributedComputing.AnomalyDetector.new(2, false)
 
--- First argument above is the normal threshold. If the predicted value is less than the normal threshold, then the player is considered not nornal.
+-- maxPlayersTiWatchPerPlayers: The maximum number of players that each player needs to watch.
+-- normalThreshold:
+-- maxAveragePredictedValuesDofferemce: If the amount is larger than the average, suspect somebody has altered our data!
 
 AnomalyDetector:bindToOutlierFound(function(Player, predictedValue) -- Runs a function if player's data is an outlier.
 
@@ -18,11 +20,12 @@ AnomalyDetector:bindToOutlierFound(function(Player, predictedValue) -- Runs a fu
 
 end)
 
-AnomalyDetector:bindToAbnormalPredictedValues(function(WatchedPlayer, watchedByPlayerArray, predictedValuesArray) -- Runs a function on every heartbeat.
+AnomalyDetector:bindToAbnormalPredictedValues(function(WatchedPlayer, watchedByPlayerArray, predictedValuesArray) -- Runs a function when average predicted values difference reaches certain threshold
 
 	print(Player.Name .. "\'s data has been collected!")
 
-	local distance = fullDataVector[14]
+	local Player = watchedByPlayerArray[1]
+	local predictedValue = predictedValuesArray[1]
 
 end)
 

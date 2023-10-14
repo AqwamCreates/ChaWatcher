@@ -12,7 +12,7 @@ local SendPredictedValueRemoteEvent: RemoteEvent
 
 local SetPlayerToWatchRemoteEvent: RemoteEvent
 
-local ActivateClientRemoteEvent: RemoteEvent
+local ActivateClientAnomalyDetectorRemoteEvent: RemoteEvent
 
 AnomalyDetector = {}
 
@@ -86,7 +86,7 @@ end
 
 function AnomalyDetector:onPlayerAdded(Player: Player)
 	
-	ActivateClientRemoteEvent:FireClient(Player, true, self.Settings)
+	ActivateClientAnomalyDetectorRemoteEvent:FireClient(Player, true, self.Settings)
 	
 	local stringUserId = tostring(Player.UserId)
 
@@ -217,13 +217,13 @@ function AnomalyDetector:createConnectionsArray()
 
 	end)
 
-	local ActivateClientRemoteEvent = SendPredictedValueRemoteEvent.OnServerEvent:Connect(function(Player)
+	local ActivateClientAnomalyDetectorRemoteEventConnection = ActivateClientAnomalyDetectorRemoteEvent.OnServerEvent:Connect(function(Player)
 
 		if self.OnClientAccessedFunction then self.OnClientAccessedFunction(Player) end
 
 	end)
 
-	return {PlayerAddedConnection, PlayerRemovingConnection, SendPredictedValueRemoteEventConnection, SetPlayerToWatchRemoteEventConnection, ActivateClientRemoteEvent}
+	return {PlayerAddedConnection, PlayerRemovingConnection, SendPredictedValueRemoteEventConnection, SetPlayerToWatchRemoteEventConnection, ActivateClientAnomalyDetectorRemoteEventConnection}
 
 end
 
@@ -235,7 +235,7 @@ local function startUp()
 
 	SetPlayerToWatchRemoteEvent = ChaWatcherDistributedComputing:FindFirstChild("SetPlayerToWatchRemoteEvent") or Instance.new("RemoteEvent")
 
-	ActivateClientRemoteEvent =  ChaWatcherDistributedComputing:FindFirstChild("ActivateClientRemoteEvent") or Instance.new("RemoteEvent")
+	ActivateClientAnomalyDetectorRemoteEvent =  ChaWatcherDistributedComputing:FindFirstChild("ActivateClientAnomalyDetectorRemoteEvent") or Instance.new("RemoteEvent")
 	
 	ChaWatcherDistributedComputing.Name = "ChaWatcherDistributedComputing"
 
@@ -243,13 +243,13 @@ local function startUp()
 
 	SetPlayerToWatchRemoteEvent.Name = "SetPlayerToWatchRemoteEvent"
 
-	ActivateClientRemoteEvent.Name = "ActivateClientRemoteEvent"
+	ActivateClientAnomalyDetectorRemoteEvent.Name = "ActivateClientAnomalyDetectorRemoteEvent"
 
 	SendPredictedValueRemoteEvent.Parent = ChaWatcherDistributedComputing
 
 	SetPlayerToWatchRemoteEvent.Parent	 = ChaWatcherDistributedComputing
 
-	ActivateClientRemoteEvent.Parent = ChaWatcherDistributedComputing
+	ActivateClientAnomalyDetectorRemoteEvent.Parent = ChaWatcherDistributedComputing
 	
 	ChaWatcherDistributedComputing.Parent = ReplicatedStorage
 
@@ -325,13 +325,13 @@ function AnomalyDetector:start()
 
 	self.ConnectionsArray = self:createConnectionsArray()
 
-	ActivateClientRemoteEvent:FireAllClients(true, self.Settings)
+	ActivateClientAnomalyDetectorRemoteEvent:FireAllClients(true, self.Settings)
 
 end
 
 function AnomalyDetector:stop()
 
-	ActivateClientRemoteEvent:FireAllClients(false)
+	ActivateClientAnomalyDetectorRemoteEvent:FireAllClients(false)
 
 	for _, Connection in ipairs(self.ConnectionsArray) do Connection:Disconnect() end
 
@@ -345,7 +345,7 @@ function AnomalyDetector:destroy()
 
 	SetPlayerToWatchRemoteEvent:Destroy()
 
-	ActivateClientRemoteEvent:Destroy()
+	ActivateClientAnomalyDetectorRemoteEvent:Destroy()
 
 	table.clear(self)
 

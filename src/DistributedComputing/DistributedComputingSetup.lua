@@ -56,7 +56,7 @@ function module:setup()
 	
 	---------------------------------------------------------------
 	
-	if not StarterPlayer:FindFirstChild("ChaWatcherClient") then
+	if not StarterPlayer:FindFirstChild(clientName) then
 		
 		local ChaWatcherDistributedComputingClient = script.Parent.ChaWatcherDistributedComputingClient:Clone()
 		

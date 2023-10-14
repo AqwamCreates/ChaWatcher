@@ -217,7 +217,7 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 
 		if not WatchedByPlayer then continue end
 		
-		if (WatchedByPlayer:GetNetworkPing() > 1) then continue end
+		if (WatchedByPlayer:GetNetworkPing() > 0.3) then continue end
 
 		if (typeof(otherPredictedValue) ~= "number") then continue end
 

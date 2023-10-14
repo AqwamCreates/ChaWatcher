@@ -69,9 +69,9 @@ function AnomalyDetector:bindToAbnormalPredictedValues(functionToRun)
 	
 end
 
-function AnomalyDetector:bindToPredictedValuesReceived(functionToRun)
+function AnomalyDetector:bindToPredictedValueReceived(functionToRun)
 	
-	self.PredictedValuesReceivedFunction = functionToRun
+	self.PredictedValueReceivedFunction = functionToRun
 	
 end
 
@@ -185,7 +185,7 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 	
 	local WatchedPlayer = convertStringUserIdToPlayer(watchedPlayerStringUserId)
 	
-	if self.PredictedValuesReceivedFunction then self.PredictedValuesReceivedFunction(WatchingPlayer, WatchedPlayer, predictedValue) end
+	if self.PredictedValueReceivedFunction then self.PredictedValueReceivedFunction(WatchingPlayer, WatchedPlayer, predictedValue) end
 	
 	if (watchingPlayerStringUserId == watchedPlayerStringUserId) and (numberOfPlayersInServer > 1) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer, WatchedPlayer, predictedValue) return end
 	

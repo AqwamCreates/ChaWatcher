@@ -135,7 +135,7 @@ local function updateDataVectors(watchedPlayerStringUserId, deltaTime: number, i
 
 	local CharacterPrimaryPart = Character.PrimaryPart
 
-	local CHaracterCFrame = Character:GetPivot()
+	local CHaracterCFrame = Character:GetPivot() -- Since hackers can fake a HumanoidRootPart and control its properties, we'll be relying on both combination of primary part and model position for best results.
 
 	local Position = CHaracterCFrame.Position
 

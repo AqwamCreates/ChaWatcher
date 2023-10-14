@@ -1,3 +1,5 @@
+local Players = game:GetService("Players")
+
 local RunService = game:GetService("RunService")
 
 local StarterPlayer = game:GetService("StarterPlayer")
@@ -17,6 +19,8 @@ local SendFullDataVectorRemoteEvent = ChaWatcherDistributedComputing.SendFullDat
 local SetPlayerToWatchRemoteEvent = ChaWatcherDistributedComputing.SetPlayerToWatchRemoteEvent
 
 local SupportVectorMachine = require(script.AqwamProprietarySourceCodes.SupportVectorMachine).new()
+
+local WatchingPlayer = Players.LocalPlayer
 
 local playersPreviousData = {}
 
@@ -160,11 +164,23 @@ end
 
 local function onAnomalyDetectorHeartbeat(deltaTime)
 	
+	for _, WatchedPlayer in playersToWatch do
+		
+		
+		SendPredictedValueRemoteEvent:FireServer(WatchingPlayer, WatchedPlayer, predictedValue)
+		
+	end
 	
 end
 
 local function onDataCollectorHearbeat(deltaTime)
 	
+	for _, WatchedPlayer in playersToWatch do
+
+		
+		SendFullDataVectorRemoteEvent:FireServer(WatchingPlayer, WatchedPlayer, fullDataVector)
+
+	end
 	
 end
 

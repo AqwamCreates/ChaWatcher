@@ -31,7 +31,7 @@ end)
 
 AnomalyDetector:bindToMissingData(function(WatchingPlayer, WatchedPlayer, currentDataVector, previousDataVector) -- Runs a function if cannot create a data vector.
 
-	print(Player.Name .. " has missing data!")
+	print(WatchedPlayer.Name .. " has missing data!")
 
 end)
 

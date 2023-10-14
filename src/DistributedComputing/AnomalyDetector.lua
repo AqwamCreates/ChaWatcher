@@ -107,7 +107,7 @@ function AnomalyDetector:onPlayerRemoving(Player: Player)
 
 		if index then table.remove(playerWatchList, index) end
 		
-		local PlayerToSet = Players:GetPlayerByUserId(tonumber(watchedByPlayerStringUserId))
+		local PlayerToSet = convertStringUserIdToPlayer(watchedByPlayerStringUserId)
 		
 		if not PlayerToSet then continue end
 		

@@ -83,8 +83,6 @@ function AnomalyDetector:getStringUserIdsWithEmptyWatchSlots(stringUserIdExeptio
 		
 		for _, _ in watchedPlayersTable do numberOfPlayersWatching += 1 end
 		
-		print(numberOfPlayersWatching)
-		
 		if (numberOfPlayersWatching >= self.MaxPlayersToWatchPerPlayer) then continue end
 		
 		table.insert(stringUserIdArray, otherStringUserId)

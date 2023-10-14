@@ -156,7 +156,7 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, Watche
 
 	end
 
-	averageDifference /= (#watchedByPlayerArray - 1)
+	averageDifference /= math.max(1, (#watchedByPlayerArray - 1))
 
 	if (averageDifference > self.MaxPredictedValuesDifferenceAverage) then
 		

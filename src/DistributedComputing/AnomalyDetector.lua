@@ -223,11 +223,7 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 	
 	local numberOfWatchingPlayers = #watchedByPlayerStringUserIdsArray
 	
-	if (numberOfWatchingPlayers > 1) then
-		
-		averageDifference /= (numberOfWatchingPlayers - 1)
-		
-	end
+	if (numberOfWatchingPlayers > 1) then averageDifference /= (numberOfWatchingPlayers - 1) end
 
 	if (averageDifference > self.MaxAveragePredictedValuesDifference) then
 		

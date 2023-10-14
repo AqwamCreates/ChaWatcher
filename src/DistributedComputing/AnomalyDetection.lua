@@ -166,12 +166,12 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, Watche
 		
 		for watchedByPlayerStringUserId, otherPredictedValue in self.ReceivedPredictedValues[targetPlayerStringUserId] do
 			
-			pcall(function()
+			local PlayerToSet = Players:GetPlayerByUserId(tonumber(watchedByPlayerStringUserId))
 				
-				table.insert(playersArray, Players:GetPlayerByUserId(tonumber(watchedByPlayerStringUserId)))
-				table.insert(predictedValuesArray, otherPredictedValue)
+			if not PlayerToSet then continue end
 				
-			end)
+			table.insert(playersArray, PlayerToSet)
+			table.insert(predictedValuesArray, otherPredictedValue)
 			
 		end
 		

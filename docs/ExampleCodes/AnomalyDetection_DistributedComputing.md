@@ -16,7 +16,7 @@ local AnomalyDetector = ChaWatcher.DistributedComputing.AnomalyDetector.new() --
 
 AnomalyDetector:bindToOutlierFound(function(WatchingPlayer, WatchedPlayer, predictedValue, fullDataVector) -- Runs a function if player's data is an outlier.
 
-	print(Player.Name .. " has an outlier data!")
+	print(WatchedPlayer.Name .. " has an outlier data!")
 
 end)
 

@@ -207,9 +207,11 @@ function AnomalyDetector:createConnectionsArray()
 
 	end)
 
-	local SendPredictedValueRemoteEventConnection = SendPredictedValueRemoteEvent.OnServerEvent:Connect(function(WatchingPlayer, WatcherPlayer, predictedValue)
+	local SendPredictedValueRemoteEventConnection = SendPredictedValueRemoteEvent.OnServerEvent:Connect(function(WatchingPlayer, WatchedPlayer, predictedValue)
+		
+		if not WatchingPlayer then return end
 
-		self:onPredictedValueReceived(WatchingPlayer, WatcherPlayer, predictedValue)
+		self:onPredictedValueReceived(WatchingPlayer, WatchedPlayer, predictedValue)
 
 	end)
 

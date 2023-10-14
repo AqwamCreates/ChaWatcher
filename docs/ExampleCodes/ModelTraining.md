@@ -8,7 +8,7 @@ local MatrixL = require(ServerScriptService.MatrixL)
 
 local ChaWatcher = require(ServerScriptService:WaitForChild("ChaWatcher"))
 
-local ModelCreator = ChaWatcher.Original.ModelCreator.new(false, nil, "1")
+local ModelCreator = ChaWatcher.Original.ModelCreator.new() -- Setting to default.
 
 local kernelParameters = {
 	

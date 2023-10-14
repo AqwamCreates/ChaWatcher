@@ -204,11 +204,11 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, Watche
 		
 		self.AbnormalPredictedValuesFunction(WatchedPlayer, playersArray, predictedValuesArray)
 		
-		return 
+	else
+		
+		if (predictedValue < self.NormalThreshold) and self.OutlierFoundFunction then self.OutlierFoundFunction(WatchedPlayer, predictedValue) end
 			
 	end
-
-	if (predictedValue < self.NormalThreshold) and self.OutlierFoundFunction then self.OutlierFoundFunction(WatchedPlayer, predictedValue) end
 	
 end
 

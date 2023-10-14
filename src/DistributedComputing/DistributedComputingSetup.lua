@@ -50,13 +50,13 @@ function module:setup()
 	
 	if not StarterPlayer:FindFirstChild("ChaWatcherClient") then
 		
-		local ChaWatcherClient = script.Parent.ChaWatcherClient:Clone()
+		local ChaWatcherDistributedComputingClient = script.Parent.ChaWatcherDistributedComputingClient:Clone()
 		
-		script.Parent.Parent.Parent.AqwamProprietarySourceCodes:Clone().Parent = ChaWatcherClient
+		script.Parent.Parent.Parent.AqwamProprietarySourceCodes:Clone().Parent = ChaWatcherDistributedComputingClient
 		
-		ChaWatcherClient.Parent = StarterPlayer
+		ChaWatcherDistributedComputingClient.Parent = StarterPlayer
 		
-		ChaWatcherClient.Enabled = true
+		ChaWatcherDistributedComputingClient.Enabled = true
 		
 	end
 	

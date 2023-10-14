@@ -203,12 +203,12 @@ end
 
 local function sendPredictedValuesToServer(WatchedPlayer, deltaTime)
 	
-	local fullDataVector = updateData(Player, deltaTime)
+	local fullDataVector = updateData(WatchedPlayer, deltaTime)
 
 	if not fullDataVector then return end
 
-	local predictedValue = SupportVectorMachine:predict(fullDataVector)
-
+	local predictedValue = SupportVectorMachine:predict({fullDataVector}, true)[1][1]
+	
 	SendPredictedValueRemoteEvent:FireServer(WatchedPlayer, predictedValue)
 	
 end
@@ -246,6 +246,8 @@ local function onActivateClientAnomalyDetectorRemoteEventConnection(isActivated,
 	else
 		
 		SupportVectorMachine:setParameters(nil, nil, nil, ReceivedSettings.kernelFunction, ReceivedSettings.kernelParameters)
+		
+		SupportVectorMachine:setModelParameters(ReceivedSettings.ModelParameters)
 		
 		AnomalyDetectorHeartbeatConnection = RunService.Heartbeat:Connect(onAnomalyDetectorHeartbeat)
 		

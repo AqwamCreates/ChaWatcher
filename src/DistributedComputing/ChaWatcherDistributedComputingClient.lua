@@ -49,6 +49,18 @@ local function iskeyExistsInTable(tableToSearch, keyToFind)
 	return false
 end
 
+local function convertStringUserIdToPlayer(stringUserId)
+
+	local userId = tonumber(stringUserId)
+
+	if not userId then return nil end
+
+	local WatchedPlayer = Players:GetPlayerByUserId(userId)
+
+	return WatchedPlayer
+
+end
+
 local function updateFullDataVector(watchedPlayerStringUserId)
 
 	local previousDataVector = playersPreviousData[watchedPlayerStringUserId] 
@@ -114,8 +126,10 @@ end
 local function updateDataVectors(watchedPlayerStringUserId, deltaTime: number, isNewData: boolean)
 
 	local previousData = playersPreviousData[watchedPlayerStringUserId]
+	
+	local WatchedPlayer = convertStringUserIdToPlayer(stringUserId)
 
-	local Character = Player.Character
+	local Character = WatchedPlayer.Character
 
 	if (Character == nil) then return nil end
 
@@ -175,7 +189,7 @@ local function updateData(watchedPlayerStringUserId, deltaTime)
 	
 	local success = pcall(function()
 
-		local Character = Player.Character
+		local WatchedPlayer = convertStringUserIdToPlayer(stringUserId)
 
 		local test = Character.PrimaryPart
 

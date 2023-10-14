@@ -1,360 +1,157 @@
-local Players = game:GetService("Players")
-
-local RunService = game:GetService("RunService")
-
 local StarterPlayer = game:GetService("StarterPlayer")
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local ModelCreatorDataStore = game:GetService("DataStoreService"):GetDataStore("AqwamChaWatcherModelCreatorDataStore")
+local ChaWatcherDistributedComputing = ReplicatedStorage:WaitForChild("ChaWatcherDistributedComputing")
 
-local SendPredictedValueRemoteEvent: RemoteEvent
+local SendPredictedValueRemoteEvent: RemoteEvent = ChaWatcherDistributedComputing.SendPredictedValueRemoteEvent
 
-local SetPlayerToWatchRemoteEvent: RemoteEvent
+local SetPlayerToTrackRemoteEvent: RemoteEvent  = ChaWatcherDistributedComputing.SetPlayerToTrackRemoteEvent
 
-local ActivateClientAnomalyDetectorRemoteEvent: RemoteEvent
+local ActivateClientRemoteEvent: RemoteEvent = ChaWatcherDistributedComputing.ActivateClientRemoteEvent
 
-AnomalyDetector = {}
+local Model
 
-AnomalyDetector.__index = AnomalyDetector
+local PlayerToTrack = {}
 
-function AnomalyDetector:bindToClientAccessedRemoteEvent(functionToRun)
+local PlayersPreviousData = {}
 
-	self.OnClientAccessedFunction = functionToRun
+local PlayersCurrentData = {}
 
-end
-
-function AnomalyDetector:bindToOutlierFound(functionToRun)
-
-	self.OutlierFoundFunction = functionToRun
-
-end
-
-function AnomalyDetector:bindToAbnormalPredictedValues(functionToRun)
-	
-	self.AbnormalPredictedValuesFunction = functionToRun
-	
-end
-
-function AnomalyDetector:getStringUserIdsWithEmptyWatchSlots(stringUserIdExeption)
-	
-	local stringUserIdArray = {}
-	
-	for otherStringUserId, watchedPlayersTable in self.PlayerWatching do
-		
-		if (otherStringUserId == stringUserIdExeption) then continue end
-
-		local numberOfPlayersWatching = 0
-		
-		for _, _ in watchedPlayersTable do numberOfPlayersWatching += 1 end
-		
-		if (numberOfPlayersWatching >= self.MaxPlayersToWatchPerPlayer) then continue end
-		
-		table.insert(stringUserIdArray, otherStringUserId)
-
-	end
-	
-	return stringUserIdArray
-	
-end
-
-function AnomalyDetector:onPlayerRemoving(Player: Player)
+local function updateFullDataVector(Player)
 
 	local UserId = Player.UserId
 
 	local stringUserId = tostring(UserId)
 
-	self.PlayerWatching[stringUserId] = nil
+	local previousDataVector = PlayersPreviousData[stringUserId] 
 
-	for watchedByPlayerStringUserId, _ in self.ReceivedPredictedValues[stringUserId] do
+	local currentDataVector = PlayersCurrentData[stringUserId] 
 
-		local playerWatchingArray = self.PlayerWatching[watchedByPlayerStringUserId] 
+	local changeInPosition = currentDataVector[1] - previousDataVector[1]
 
-		local index = table.find(playerWatchingArray, UserId)
+	local changeInOrientation = currentDataVector[2] - previousDataVector[2]
 
-		if index then table.remove(playerWatchingArray, index) end
-		
-		local PlayerToSet = Players:GetPlayerByUserId(tonumber(watchedByPlayerStringUserId))
-		
-		SetPlayerToWatchRemoteEvent:FireClient(PlayerToSet, self.PlayerWatching[watchedByPlayerStringUserId])
+	local currentVelocity = currentDataVector[3] 
 
-	end
+	local previousVelocity = previousDataVector[3]
 
-	self.ReceivedPredictedValues[stringUserId] = nil
+	local changeInVelocity = currentVelocity - previousVelocity
 
-end
+	local timeSpentFlying = currentDataVector[4]
 
-function AnomalyDetector:onPlayerAdded(Player: Player)
-	
-	ActivateClientAnomalyDetectorRemoteEvent:FireClient(Player, true, self.Settings)
-	
-	local stringUserId = tostring(Player.UserId)
+	local distance = changeInPosition.Magnitude
 
-	local otherStringUserIdArray = self:getStringUserIdsWithEmptyWatchSlots(stringUserId)
-	
-	local stringUserIdToWatchArray = {}
-	
-	local numberOfWatchedBy = 0
-	
-	while (numberOfWatchedBy < self.MaxPlayersToWatchPerPlayer) and (#otherStringUserIdArray >= 0) do
-		
-		local randomIndex = Random.new():NextInteger(1, #otherStringUserIdArray)
-		
-		local randomStringUserId = otherStringUserIdArray[randomIndex]
-		
-		local PlayerToSet = Players:GetPlayerByUserId(tonumber(randomStringUserId))
-		
-		if not PlayerToSet then continue end
-		
-		table.insert(self.PlayerWatching[randomStringUserId], stringUserId)
-		
-		SetPlayerToWatchRemoteEvent:FireClient(PlayerToSet, self.PlayerWatching[randomStringUserId])
-		
-		table.remove(randomStringUserId, randomIndex)
-		
-		numberOfWatchedBy += 1
-		
-	end 
-	
-	for otherStringUserId, watchedByPlayerStringUserIds in self.ReceivedPredictedValues do
-		
-		local numberOfPlayersWatchedByForOtherPlayer = 0
-		
-		for watchedByPlayerStringUserId, otherPredictedValue in watchedByPlayerStringUserIds do numberOfPlayersWatchedByForOtherPlayer += 1 end
-		
-		if (numberOfPlayersWatchedByForOtherPlayer >= self.MaxPlayersToWatchPerPlayer) then continue end
-		
-		table.insert(stringUserIdToWatchArray, otherStringUserId)
-		
-	end
-	
-	self.PlayerWatching[stringUserId] = stringUserIdToWatchArray
-	
-	SetPlayerToWatchRemoteEvent:FireClient(Player, stringUserIdToWatchArray)
-	
-end
+	local fullDataVector = {
 
-function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, WatchedPlayer: Player, predictedValue)
-	
-	if (WatchedPlayer == WatchingPlayer) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end 
-	
-	if ((typeof(WatchedPlayer) ~= "Player") or (typeof(predictedValue) ~= "number")) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end
+		changeInPosition.X, changeInPosition.Y, changeInPosition.Z,
 
-	local targetPlayerStringUserId = tostring(WatchedPlayer.UserId)
+		math.rad(changeInOrientation.X), math.rad(changeInOrientation.Y), math.rad(changeInOrientation.Z),
 
-	self.ReceivedPredictedValues[targetPlayerStringUserId][tostring(WatchingPlayer.UserId)] = predictedValue
+		changeInVelocity.X, changeInVelocity.Y, changeInVelocity.Z,
 
-	local averageDifference = 0
-	
-	local watchedByPlayerArray = {}
+		currentVelocity.X, currentVelocity.Y, currentVelocity.Z,
 
-	for watchedByPlayerStringUserId, otherPredictedValue in self.ReceivedPredictedValues[targetPlayerStringUserId] do
+		timeSpentFlying, distance
 
-		if (typeof(otherPredictedValue) ~= "number") then continue end
+	}
 
-		averageDifference += math.abs(predictedValue - otherPredictedValue)
-		
-		table.insert(watchedByPlayerArray, watchedByPlayerStringUserId)
-
-	end
-	
-	local numberOfWatchingPlayers = #watchedByPlayerArray
-	
-	if (numberOfWatchingPlayers > 1) then
-		
-		averageDifference /= (numberOfWatchingPlayers - 1)
-		
-	end
-
-	if (averageDifference > self.MaxPredictedValuesDifferenceAverage) then
-		
-		local playersArray = {}
-		
-		local predictedValuesArray = {}
-		
-		for watchedByPlayerStringUserId, otherPredictedValue in self.ReceivedPredictedValues[targetPlayerStringUserId] do
-			
-			local PlayerToSet = Players:GetPlayerByUserId(tonumber(watchedByPlayerStringUserId))
-				
-			if not PlayerToSet then continue end
-				
-			table.insert(playersArray, PlayerToSet)
-			table.insert(predictedValuesArray, otherPredictedValue)
-			
-		end
-		
-		self.AbnormalPredictedValuesFunction(WatchedPlayer, playersArray, predictedValuesArray)
-		
-		return 
-			
-	end
-
-	if (predictedValue < self.NormalThreshold) and self.OutlierFoundFunction then self.OutlierFoundFunction(WatchedPlayer, predictedValue) end
-	
-end
-
-function AnomalyDetector:createConnectionsArray()
-
-	local PlayerAddedConnection = Players.PlayerAdded:Connect(function(Player)
-
-		self:onPlayerAdded(Player)
-
-	end)
-
-	local PlayerRemovingConnection = Players.PlayerRemoving:Connect(function(Player)
-
-		self:onPlayerRemoving(Player)
-
-	end)
-
-	local SendPredictedValueRemoteEventConnection = SendPredictedValueRemoteEvent.OnServerEvent:Connect(function(WatchingPlayer, WatchedPlayer, predictedValue)
-		
-		if not WatchingPlayer then return end
-
-		self:onPredictedValueReceived(WatchingPlayer, WatchedPlayer, predictedValue)
-
-	end)
-
-	local SetPlayerToWatchRemoteEventConnection = SetPlayerToWatchRemoteEvent.OnServerEvent:Connect(function(Player)
-
-		if self.OnClientAccessedFunction then self.OnClientAccessedFunction(Player) end
-
-	end)
-
-	local ActivateClientAnomalyDetectorRemoteEventConnection = ActivateClientAnomalyDetectorRemoteEvent.OnServerEvent:Connect(function(Player)
-
-		if self.OnClientAccessedFunction then self.OnClientAccessedFunction(Player) end
-
-	end)
-
-	return {PlayerAddedConnection, PlayerRemovingConnection, SendPredictedValueRemoteEventConnection, SetPlayerToWatchRemoteEventConnection, ActivateClientAnomalyDetectorRemoteEventConnection}
+	return fullDataVector
 
 end
 
-local function startUp()
+local function checkIfIsFlying(Character: Model)
 
-	local ChaWatcherDistributedComputing = ReplicatedStorage:FindFirstChild("ChaWatcherDistributedComputing") or Instance.new("Folder")
+	local CharacterPosition = Character:GetPivot().Position
 
-	SendPredictedValueRemoteEvent = ChaWatcherDistributedComputing:FindFirstChild("SendPredictedValueRemoteEvent") or Instance.new("RemoteEvent")
+	local DirectionVector = Vector3.new(0, -3.1, 0)
 
-	SetPlayerToWatchRemoteEvent = ChaWatcherDistributedComputing:FindFirstChild("SetPlayerToWatchRemoteEvent") or Instance.new("RemoteEvent")
+	local raycastParameters = RaycastParams.new()
 
-	ActivateClientAnomalyDetectorRemoteEvent =  ChaWatcherDistributedComputing:FindFirstChild("ActivateClientAnomalyDetectorRemoteEvent") or Instance.new("RemoteEvent")
-	
-	ChaWatcherDistributedComputing.Name = "ChaWatcherDistributedComputing"
+	raycastParameters.FilterDescendantsInstances = Character:GetChildren()
 
-	SendPredictedValueRemoteEvent.Name = "SendPredictedValueRemoteEvent"
+	raycastParameters.FilterType = Enum.RaycastFilterType.Exclude
 
-	SetPlayerToWatchRemoteEvent.Name = "SetPlayerToWatchRemoteEvent"
+	local result = workspace:Raycast(CharacterPosition, DirectionVector, raycastParameters)
 
-	ActivateClientAnomalyDetectorRemoteEvent.Name = "ActivateClientAnomalyDetectorRemoteEvent"
+	if not result then 
 
-	SendPredictedValueRemoteEvent.Parent = ChaWatcherDistributedComputing
-
-	SetPlayerToWatchRemoteEvent.Parent	 = ChaWatcherDistributedComputing
-
-	ActivateClientAnomalyDetectorRemoteEvent.Parent = ChaWatcherDistributedComputing
-	
-	ChaWatcherDistributedComputing.Parent = ReplicatedStorage
-
-	local ChaWatcherClientAnomalyDetector = script.ChaWatcherClientAnomalyDetector
-
-	script.Parent.Parent.Parent.AqwamProprietarySourceCodes:Clone().Parent = ChaWatcherClientAnomalyDetector
-
-	ChaWatcherClientAnomalyDetector.Parent = StarterPlayer
-
-end
-
-local function fetchSettings(useOnlineModel: boolean, key: string)
-
-	if useOnlineModel then
-
-		return ModelCreatorDataStore:GetAsync(key)
+		return true
 
 	else
 
-		return require(script.Parent.OfflineModelSettings)[key]
+		return false
 
 	end
 
 end
 
-function AnomalyDetector.new(maxPlayersToWatchPerPlayer: number, normalThreshold: number, maxPredictedValuesDifferenceAverage: number, useOnlineModel: boolean, key: string)
+local function updateDataVectors(Player: Player, deltaTime: number, isNewData: boolean)
 
-	local NewAnomalyDetector = {}
+	local UserId = Player.UserId
 
-	setmetatable(NewAnomalyDetector, AnomalyDetector)
+	local stringUserId = tostring(UserId)
 
-	key = key or "default"
+	local previousData = PlayersPreviousData[stringUserId]
 
-	if (typeof(key) ~= "string") then error("Key is not a string value!") end
+	local Character = Player.Character
 
-	local Settings = fetchSettings(useOnlineModel, key)
+	if (Character == nil) then return nil end
 
-	if not Settings then error("No Settings Found!") end
+	local CharacterPrimaryPart = Character.PrimaryPart
 
-	normalThreshold = normalThreshold or Settings["normalThreshold"]
+	local Position = CharacterPrimaryPart.Position
 
-	if (typeof(normalThreshold) ~= "number") then error("Normal threshold is not a number value!") end
-	
-	maxPredictedValuesDifferenceAverage = maxPredictedValuesDifferenceAverage or Settings["maxPredictedValuesDifferenceAverage"]
+	local Orientation = CharacterPrimaryPart.Orientation -- in degrees so it is easier to convert to radians later
 
-	if (typeof(maxPredictedValuesDifferenceAverage) ~= "number") then error("Maximum predicted values difference average is not a number value!") end
-	
-	maxPlayersToWatchPerPlayer = maxPlayersToWatchPerPlayer or 2
-	
-	if (typeof(maxPlayersToWatchPerPlayer) ~= "number") then error("Maximum players to watch is not a number value!") end
-	
-	NewAnomalyDetector.Settings = Settings
-	
-	NewAnomalyDetector.NormalThreshold = normalThreshold
+	local Velocity = CharacterPrimaryPart.Velocity
 
-	NewAnomalyDetector.MaxPredictedValuesDifferenceAverage = maxPredictedValuesDifferenceAverage
-	
-	NewAnomalyDetector.MaxPlayersToWatchPerPlayer = maxPlayersToWatchPerPlayer
-	
-	NewAnomalyDetector.PlayerWatching = {}
+	local isFlying = checkIfIsFlying(Character)
 
-	NewAnomalyDetector.ConnectionsArray = {}
-	
-	NewAnomalyDetector.ReceivedPredictedValues = {}
+	local accumulatedFlyingTime
 
-	startUp()
+	if previousData then
 
-	return NewAnomalyDetector
+		accumulatedFlyingTime = previousData[4]
 
-end
+	else
 
-function AnomalyDetector:start()
+		accumulatedFlyingTime = 0
 
-	self.ConnectionsArray = self:createConnectionsArray()
+	end
 
-	ActivateClientAnomalyDetectorRemoteEvent:FireAllClients(true, self.Settings)
+	if isFlying then
 
-end
+		accumulatedFlyingTime += deltaTime
 
-function AnomalyDetector:stop()
+	else
 
-	ActivateClientAnomalyDetectorRemoteEvent:FireAllClients(false)
+		accumulatedFlyingTime = 0
 
-	for _, Connection in ipairs(self.ConnectionsArray) do Connection:Disconnect() end
+	end
 
-end
+	if (isNewData == true) then
 
-function AnomalyDetector:destroy()
-	
-	self:stop()
-	
-	SendPredictedValueRemoteEvent:Destroy()
+		previousData = nil
 
-	SetPlayerToWatchRemoteEvent:Destroy()
+	else
 
-	ActivateClientAnomalyDetectorRemoteEvent:Destroy()
+		previousData = PlayersCurrentData[stringUserId]
 
-	table.clear(self)
+	end
 
-	AnomalyDetector = nil
+	local currentData = {Position, Orientation, Velocity, accumulatedFlyingTime}
+
+	PlayersPreviousData[stringUserId] = previousData
+
+	PlayersCurrentData[stringUserId] = currentData
 
 end
 
-return AnomalyDetector
+local function onSetPlayerToTrackRemoteEventConnection()
+	
+	
+	
+end
+
+SetPlayerToTrackRemoteEvent.OnClientEvent:Connect(onSetPlayerToTrackRemoteEventConnection)

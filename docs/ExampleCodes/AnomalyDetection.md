@@ -8,7 +8,7 @@ local MatrixL = require(ServerScriptService.MatrixL)
 
 local ChaWatcher = require(ServerScriptService.ChaWatcher)
 
-local AnomalyDetector = ChaWatcher.Original.AnomalyDetector.new(0.5, false)
+local AnomalyDetector = ChaWatcher.Original.AnomalyDetector.new() -- Setting to defaults.
 
 -- First argument above is the normal threshold. If the predicted value is less than the normal threshold, then the player is considered not nornal.
 

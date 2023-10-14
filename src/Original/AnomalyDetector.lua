@@ -1,145 +1,370 @@
-local ModelCreatorDataStore = game:GetService("DataStoreService"):GetDataStore("AqwamChaWatcherModelCreatorDataStore")
+local RunService = game:GetService("RunService")
 
-AnomalyDetector = {}
+local Players = game:GetService("Players")
 
-AnomalyDetector.__index = AnomalyDetector
+local DataCollectorDataStore = game:GetService("DataStoreService"):GetDataStore("AqwamChaWatcherDataCollectorDataStore")
 
-function AnomalyDetector:getPlayerDataVectors(Player)
+DataCollector = {}
 
-	return self.DataCollector:getPlayerDataVectors(Player)
+DataCollector.__index = DataCollector
+
+function DataCollector:updateFullDataVector(Player)
+
+	local UserId = Player.UserId
+
+	local stringUserId = tostring(UserId)
+
+	local previousDataVector = self.PlayersPreviousData[stringUserId] 
+
+	local currentDataVector = self.PlayersCurrentData[stringUserId] 
+
+	local changeInPosition = currentDataVector[1] - previousDataVector[1]
+
+	local changeInOrientation = currentDataVector[2] - previousDataVector[2]
+
+	local currentVelocity = currentDataVector[3] 
+
+	local previousVelocity = previousDataVector[3]
+
+	local changeInVelocity = currentVelocity - previousVelocity
+
+	local timeSpentFlying = currentDataVector[4]
+
+	local distance = changeInPosition.Magnitude
+
+	local fullDataVector = {
+
+		changeInPosition.X, changeInPosition.Y, changeInPosition.Z,
+
+		math.rad(changeInOrientation.X), math.rad(changeInOrientation.Y), math.rad(changeInOrientation.Z),
+
+		changeInVelocity.X, changeInVelocity.Y, changeInVelocity.Z,
+
+		currentVelocity.X, currentVelocity.Y, currentVelocity.Z,
+
+		timeSpentFlying, distance
+
+	}
+
+	return fullDataVector
 
 end
 
-function AnomalyDetector:bindToOutlierFound(functionToRun)
-	
-	self.OutlierFoundFunction = functionToRun
-	
-end
+local function checkIfIsFlying(Character: Model)
 
-function AnomalyDetector:bindToHeartbeat(functionToRun)
+	local CharacterPosition = Character:GetPivot().Position
 
-	self.HeartbeatFunction = functionToRun
+	local DirectionVector = Vector3.new(0, -3.1, 0)
 
-end
+	local raycastParameters = RaycastParams.new()
 
-function AnomalyDetector:bindToMissingData(functionToRun)
-	
-	self.MissingDataFunction = functionToRun
+	raycastParameters.FilterDescendantsInstances = Character:GetChildren()
 
-end
+	raycastParameters.FilterType = Enum.RaycastFilterType.Exclude
 
-function AnomalyDetector:createDataCollector()
-	
-	local DataCollector = require(script.Parent.DataCollector).new(false)
-	
-	DataCollector:bindToHeartbeat(function(Player, fullDataVector)
-		
-		local predictedValue = self.SupportVectorMachine:predict({fullDataVector}, true)[1][1]
+	local result = workspace:Raycast(CharacterPosition, DirectionVector, raycastParameters)
 
-		local isOutlier = (predictedValue < self.NormalThreshold)
-		
-		if self.HeartbeatFunction then self.HeartbeatFunction(Player, predictedValue, fullDataVector) end
-		
-		if isOutlier and self.OutlierFoundFunction then self.OutlierFoundFunction(Player, predictedValue, fullDataVector) end
+	if not result then 
 
-	end)
-
-	DataCollector:bindToMissingData(function(Player)
-
-		if self.MissingDataFunction then self.MissingDataFunction(Player) end 
-
-	end)
-	
-	return DataCollector
-	
-end
-
-function AnomalyDetector:createSupportVectorMachine(ModelParameters, kernelFunction, kernelParameters)
-	
-	local SVM =  require(script.Parent.Parent.Parent.AqwamProprietarySourceCodes.SupportVectorMachine).new(nil, nil, nil, kernelFunction, kernelParameters)
-	
-	SVM:setModelParameters(ModelParameters)
-	
-	return SVM
-	
-end
-
-local function fetchSettings(useOnlineModel: boolean, key: string)
-	
-	if useOnlineModel then
-
-		return ModelCreatorDataStore:GetAsync(key)
+		return true
 
 	else
 
-		return require(script.Parent.OfflineModelSettings)[key]
+		return false
 
 	end
+
+end
+
+function DataCollector:updateDataVectors(Player: Player, deltaTime: number, isNewData: boolean)
+
+	local UserId = Player.UserId
+
+	local stringUserId = tostring(UserId)
+
+	local previousData = self.PlayersPreviousData[stringUserId]
+
+	local Character = Player.Character
+
+	if (Character == nil) then return nil end
+
+	local CharacterPrimaryPart = Character.PrimaryPart
+	
+	local CHaracterCFrame = Character:GetPivot() -- Since hackers can fake a HumanoidRootPart and control its properties, we'll be relying on both combination of primary part and model position for best results.
+
+	local Position = CHaracterCFrame.Position
+
+	local Orientation = Vector3.new(math.deg(CHaracterCFrame.LookVector.X), math.deg(CHaracterCFrame.LookVector.Y), math.deg(CHaracterCFrame.LookVector.Z)) -- in degrees so it is easier to convert to radians later
+
+	local Velocity = CharacterPrimaryPart.Velocity
+
+	local isFlying = checkIfIsFlying(Character)
+
+	local accumulatedFlyingTime
+
+	if previousData then
+
+		accumulatedFlyingTime = previousData[4]
+
+	else
+
+		accumulatedFlyingTime = 0
+
+	end
+
+	if isFlying then
+
+		accumulatedFlyingTime += deltaTime
+
+	else
+
+		accumulatedFlyingTime = 0
+
+	end
+
+	if (isNewData == true) then
+
+		previousData = nil
+
+	else
+
+		previousData = self.PlayersCurrentData[stringUserId]
+
+	end
+
+	local currentData = {Position, Orientation, Velocity, accumulatedFlyingTime}
+
+	self.PlayersPreviousData[stringUserId] = previousData
+
+	self.PlayersCurrentData[stringUserId] = currentData
+
+end
+
+function DataCollector:onPlayerRemoving(Player: Player)
+
+	local UserId = Player.UserId
+
+	local stringUserId = tostring(UserId)
+	
+	self.PlayersCurrentData[stringUserId] = nil
+
+	self.PlayersPreviousData[stringUserId] = nil
+	
+	self.IsPlayerRecentlyJoined[stringUserId] = nil
+
+end
+
+function DataCollector:onHeartbeatForPlayer(Player, deltaTime)
+	
+	local isHumanoidDead = false
+
+	local success = pcall(function()
+
+		local Character = Player.Character
+
+		local test = Character.PrimaryPart
+
+		isHumanoidDead = (Character.Humanoid:GetState() == Enum.HumanoidStateType.Dead)
+
+	end)
+
+	local isMissingData = not success
+
+	local isNewData = isHumanoidDead or isMissingData
+	
+	if isMissingData then 
+
+		if self.OnMissingDataFunction then self.OnMissingDataFunction(Player) end
+		return
+
+	end
+
+	self:updateDataVectors(Player, deltaTime, isNewData)
+
+	if not self.PlayersPreviousData[tostring(Player.UserId)] then return end
+
+	local dataVector = self:updateFullDataVector(Player)
+
+	if self.StoreFullData then table.insert(self.FullData, dataVector) end
+
+	if self.OnHeartbeatFunction then self.OnHeartbeatFunction(Player, dataVector) end
 	
 end
 
-function AnomalyDetector.new(normalThreshold: number, useOnlineModel: boolean, key: string)
+function DataCollector:onHeartbeat(deltaTime)
 	
-	local NewAnomalyDetector = {}
-	
-	setmetatable(NewAnomalyDetector, AnomalyDetector)
-	
-	key = key or "default"
-	
-	if (typeof(key) ~= "string") then error("Key is not a string value!") end
-	
-	local Settings = fetchSettings(useOnlineModel, key)
-	
-	if not Settings then error("No Settings Found!") end
-	
-	normalThreshold = normalThreshold or Settings["normalThreshold"]
+	for _, Player in Players:GetPlayers() do
 
-	if (typeof(normalThreshold) ~= "number") then error("Normal threshold is not a number value!") end
-
-	NewAnomalyDetector.NormalThreshold = normalThreshold
+		if (Player == nil) then continue end
 		
-	local ModelParameters = Settings["ModelParameters"]
-	
-	local kernelFunction = Settings["kernelFunction"]
+		if self.IsPlayerRecentlyJoined[tostring(Player.UserId)] then continue end
+
+		task.spawn(function()
+
+			self:onHeartbeatForPlayer(Player, deltaTime)
+
+		end)
+
+	end
+
+end
+
+function DataCollector:createConnectionsArray()
+
+	local PlayerAddedConnection = Players.PlayerAdded:Connect(function(Player)
 		
-	local kernelParameters = Settings["kernelParameters"]
+		local stringUserId = tostring(Player.UserId)
+		
+		self.IsPlayerRecentlyJoined[stringUserId] = true
+		
+		self:updateDataVectors(Player, 0, true)
+
+		Player.CharacterAdded:Connect(function()
+			
+			self.IsPlayerRecentlyJoined[stringUserId] = false
+
+		end)
+
+	end)
+
+	local PlayerRemovingConnection = Players.PlayerRemoving:Connect(function(Player)
+
+		self:onPlayerRemoving(Player)
+
+	end)
+
+	local RunServiceConnection = RunService.Heartbeat:Connect(function(deltaTime)
+
+		self:onHeartbeat(deltaTime)
+
+	end)
+
+	return {PlayerAddedConnection, PlayerRemovingConnection, RunServiceConnection}
+
+end
+
+function DataCollector:getPlayerDataVectors(Player: Player)
 	
-	if not ModelParameters then error("No model parameters found!") end
+	if not Player:IsA("Player") then error("Not a player object!") end
+
+	local UserId = Player.UserId
+
+	local stringUserId = tostring(UserId)
+
+	local previousDataVector = self.PlayersPreviousData[stringUserId] 
+
+	local currentDataVector = self.PlayersCurrentData[stringUserId] 
+
+	return currentDataVector, previousDataVector
+
+end
+
+function DataCollector:getFullData()
 	
-	if not kernelFunction then warn("No kernel function found! Using default function!") end
+	if (#self.FullData > 0) then
+		
+		return self.FullData
+		
+	else
+		
+		local fullData = DataCollectorDataStore:GetAsync(self.DataStoreKey)
+		
+		return fullData
+		
+	end 
+
+end
+
+function DataCollector:saveFullDataOnline()
+
+	if not self.StoreFullData then warn("Did not save due to not storing full data.") return false end
+
+	local success
+
+	repeat
+
+		success = pcall(function()
+
+			DataCollectorDataStore:SetAsync(self.DataStoreKey, self.FullData)
+
+		end)
+
+		task.wait(0.1)
+
+	until success
+
+	print("Full data has been saved!")
+
+	return true
+
+end
+
+function DataCollector:bindToHeartbeat(functionToRun)
+
+	self.OnHeartbeatFunction = functionToRun
+
+end
+
+function DataCollector:bindToMissingData(functionToRun)
+
+	self.OnMissingDataFunction = functionToRun
+
+end
+
+function DataCollector.new(storeFullData: boolean, dataStoreKey: string)
+
+	local NewDataCollector = {}
+
+	setmetatable(NewDataCollector, DataCollector)
+
+	dataStoreKey = dataStoreKey or "default"
+
+	if (typeof(dataStoreKey) ~= "string") then error("Key is not a string value!") end
+
+	NewDataCollector.ConnectionsArray = {}
+
+	NewDataCollector.PlayersCurrentData = {}
+
+	NewDataCollector.PlayersPreviousData = {}
+
+	NewDataCollector.FullData = {}
 	
-	if not kernelParameters then warn("No Kkernel parameters Found! Using default values!") end
+	NewDataCollector.IsPlayerRecentlyJoined = {}
+
+	NewDataCollector.StoreFullData = storeFullData
+
+	NewDataCollector.DataStoreKey = dataStoreKey
+
+	return NewDataCollector
+
+end
+
+function DataCollector:start()
+
+	self.ConnectionsArray = self:createConnectionsArray()
+
+end
+
+function DataCollector:stop() 
+
+	for _, Connection in ipairs(self.ConnectionsArray) do Connection:Disconnect() end
+
+end
+
+function DataCollector:clearFullData()
 	
-	NewAnomalyDetector.SupportVectorMachine = NewAnomalyDetector:createSupportVectorMachine(ModelParameters, kernelFunction, kernelParameters)
-	
-	NewAnomalyDetector.DataCollector = NewAnomalyDetector:createDataCollector()
-	
-	return NewAnomalyDetector
+	self.FullData = {}
 	
 end
 
-function AnomalyDetector:start()
-	
-	self.DataCollector:start()
-	
-end
+function DataCollector:destroy()
 
-function AnomalyDetector:stop()
-
-	self.DataCollector:stop()
-
-end
-
-function AnomalyDetector:destroy()
-	
-	self.DataCollector:destroy()
-	
-	self.SupportVectorMachine:destroy()
+	for _, Connection in ipairs(self.ConnectionsArray) do Connection:Disconnect() end
 
 	table.clear(self)
 
-	AnomalyDetector = nil
-	
+	DataCollector = nil
+
 end
 
-return AnomalyDetector
+return DataCollector

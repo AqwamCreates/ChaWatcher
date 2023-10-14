@@ -89,10 +89,12 @@ function DataCollector:updateDataVectors(Player: Player, deltaTime: number, isNe
 	if (Character == nil) then return nil end
 
 	local CharacterPrimaryPart = Character.PrimaryPart
+	
+	local CHaracterCFrame = Character:GetPivot()
 
-	local Position = CharacterPrimaryPart.Position
+	local Position = CHaracterCFrame.Position
 
-	local Orientation = CharacterPrimaryPart.Orientation -- in degrees so it is easier to convert to radians later
+	local Orientation = Vector3.new(math.deg(CHaracterCFrame.LookVector.X), math.deg(CHaracterCFrame.LookVector.Y), math.deg(CHaracterCFrame.LookVector.Z)) -- in degrees so it is easier to convert to radians later
 
 	local Velocity = CharacterPrimaryPart.Velocity
 

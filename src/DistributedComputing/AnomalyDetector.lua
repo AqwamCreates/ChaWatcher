@@ -45,8 +45,6 @@ local function convertStringUserIdToPlayer(stringUserId)
 	
 end
 	
-	
-	
 function AnomalyDetector:bindToMissingData(functionToRun)
 
 	self.OnMissingDataFunction = functionToRun

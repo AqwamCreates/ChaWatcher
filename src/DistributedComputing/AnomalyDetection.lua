@@ -250,6 +250,8 @@ local function startUp()
 	SetPlayerToWatchRemoteEvent.Parent	 = ChaWatcherDistributedComputing
 
 	ActivateClientRemoteEvent.Parent = ChaWatcherDistributedComputing
+	
+	ChaWatcherDistributedComputing.Parent = ReplicatedStorage
 
 	local ChaWatcherClientAnomalyDetector = script.ChaWatcherClientAnomalyDetector
 

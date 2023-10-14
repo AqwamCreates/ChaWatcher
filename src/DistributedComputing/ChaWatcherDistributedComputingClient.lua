@@ -20,8 +20,6 @@ local SetPlayerToWatchRemoteEvent = ChaWatcherDistributedComputing.SetPlayerToWa
 
 local SupportVectorMachine = require(script.AqwamProprietarySourceCodes.SupportVectorMachine).new()
 
-local WatchingPlayer = Players.LocalPlayer
-
 local playersPreviousData = {}
 
 local playersCurrentData = {}
@@ -167,7 +165,7 @@ local function onAnomalyDetectorHeartbeat(deltaTime)
 	for _, WatchedPlayer in playersToWatch do
 		
 		
-		SendPredictedValueRemoteEvent:FireServer(WatchingPlayer, WatchedPlayer, predictedValue)
+		SendPredictedValueRemoteEvent:FireServer(WatchedPlayer, predictedValue)
 		
 	end
 	
@@ -176,7 +174,7 @@ end
 local function onDataCollectorHearbeat(deltaTime)
 	
 		
-	SendFullDataVectorRemoteEvent:FireServer(WatchingPlayer, WatchedPlayer, fullDataVector)
+	SendFullDataVectorRemoteEvent:FireServer(fullDataVector)
 	
 end
 

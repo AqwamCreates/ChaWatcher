@@ -24,27 +24,36 @@ local SupportVectorMachine = require(script.AqwamProprietarySourceCodes.SupportV
 
 local Player = Players.LocalPlayer
 
+local stringUserId = tostring(Player.UserId)
+
 local Character = Player.Character
+
+local playersToWatchStringUserIds = {}
 
 local playersPreviousData = {}
 
 local playersCurrentData = {}
 
-local playersToWatch = {}
-
 local AnomalyDetectorHeartbeatConnection
 
 local DataCollectorHearbeatConnection
 
-local function updateFullDataVector(Player)
+local function iskeyExistsInTable(tableToSearch, keyToFind)
 
-	local UserId = Player.UserId
+	for key, _ in pairs(tableToSearch) do
 
-	local stringUserId = tostring(UserId)
+		if (key == keyToFind) then return true end
 
-	local previousDataVector = playersPreviousData[stringUserId] 
+	end
 
-	local currentDataVector = playersCurrentData[stringUserId] 
+	return false
+end
+
+local function updateFullDataVector(watchedPlayerStringUserId)
+
+	local previousDataVector = playersPreviousData[watchedPlayerStringUserId] 
+
+	local currentDataVector = playersCurrentData[watchedPlayerStringUserId] 
 
 	local changeInPosition = currentDataVector[1] - previousDataVector[1]
 
@@ -102,13 +111,9 @@ local function checkIfIsFlying(Character: Model)
 
 end
 
-local function updateDataVectors(Player: Player, deltaTime: number, isNewData: boolean)
+local function updateDataVectors(watchedPlayerStringUserId, deltaTime: number, isNewData: boolean)
 
-	local UserId = Player.UserId
-
-	local stringUserId = tostring(UserId)
-
-	local previousData = playersPreviousData[stringUserId]
+	local previousData = playersPreviousData[watchedPlayerStringUserId]
 
 	local Character = Player.Character
 
@@ -152,19 +157,19 @@ local function updateDataVectors(Player: Player, deltaTime: number, isNewData: b
 
 	else
 
-		previousData = playersCurrentData[stringUserId]
+		previousData = playersCurrentData[watchedPlayerStringUserId]
 
 	end
 
 	local currentData = {Position, Orientation, Velocity, accumulatedFlyingTime}
 
-	playersPreviousData[stringUserId] = previousData
+	playersPreviousData[watchedPlayerStringUserId] = previousData
 
-	playersCurrentData[stringUserId] = currentData
+	playersCurrentData[watchedPlayerStringUserId] = currentData
 
 end
 
-local function updateData(PlayerToUpdate, deltaTime)
+local function updateData(watchedByPlayerStringUserId, deltaTime)
 	
 	local isHumanoidDead = false
 	
@@ -182,34 +187,34 @@ local function updateData(PlayerToUpdate, deltaTime)
 
 	local isNewData = isHumanoidDead or isMissingData
 	
-	local previousData = playersPreviousData[tostring(PlayerToUpdate.UserId)]
+	local previousData = playersPreviousData[watchedByPlayerStringUserId]
 	
 	if isMissingData then 
 		
-		OnMissingDataRemoteEvent:FireServer(PlayerToUpdate, playersCurrentData[tostring(PlayerToUpdate.UserId)], previousData)
+		OnMissingDataRemoteEvent:FireServer(watchedByPlayerStringUserId, playersCurrentData[watchedByPlayerStringUserId], previousData)
 		return nil 
 		
 	end
 	
-	updateDataVectors(PlayerToUpdate, deltaTime, isNewData)
+	updateDataVectors(watchedByPlayerStringUserId, deltaTime, isNewData)
 	
 	if not previousData then return nil end
 
-	local fullDataVector = updateFullDataVector(PlayerToUpdate)
+	local fullDataVector = updateFullDataVector(watchedByPlayerStringUserId)
 	
 	return fullDataVector
 	
 end
 
-local function sendPredictedValuesToServer(WatchedPlayer, deltaTime)
+local function sendPredictedValuesToServer(watchedPlayerStringUserId, deltaTime)
 	
-	local fullDataVector = updateData(WatchedPlayer, deltaTime)
+	local fullDataVector = updateData(watchedPlayerStringUserId, deltaTime)
 
 	if not fullDataVector then return end
 
 	local predictedValue = SupportVectorMachine:predict({fullDataVector}, true)[1][1]
 	
-	SendPredictedValueRemoteEvent:FireServer(WatchedPlayer, predictedValue)
+	SendPredictedValueRemoteEvent:FireServer(watchedPlayerStringUserId, predictedValue)
 	
 end
 
@@ -217,11 +222,11 @@ local function onAnomalyDetectorHeartbeat(deltaTime)
 	
 	if (#Players:GetPlayers() == 1) then
 		
-		sendPredictedValuesToServer(Player, deltaTime)
+		sendPredictedValuesToServer(stringUserId, deltaTime)
 		
 	else
 		
-		for _, WatchedPlayer in playersToWatch do sendPredictedValuesToServer(WatchedPlayer, deltaTime) end
+		for _, watchedPlayerStringUserId in playersToWatchStringUserIds do sendPredictedValuesToServer(watchedPlayerStringUserId, deltaTime) end
 		
 	end
 	
@@ -271,7 +276,7 @@ end
 
 local function onSetPlayerToWatchRemoteEventConnection(receivedPlayersToWatch)
 	
-	playersToWatch = receivedPlayersToWatch
+	playersToWatchStringUserIds = receivedPlayersToWatch
 	
 end
 

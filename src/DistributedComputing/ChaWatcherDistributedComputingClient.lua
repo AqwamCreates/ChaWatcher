@@ -230,7 +230,7 @@ local function sendPredictedValuesToServer(watchedPlayerStringUserId, deltaTime)
 	
 	local predictedValue = SupportVectorMachine:predict({fullDataVector}, true)[1][1]
 	
-	SendPredictedValueRemoteEvent:FireServer(watchedPlayerStringUserId, predictedValue)
+	SendPredictedValueRemoteEvent:FireServer(watchedPlayerStringUserId, predictedValue, fullDataVector)
 	
 end
 

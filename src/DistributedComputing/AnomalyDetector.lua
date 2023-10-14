@@ -225,7 +225,7 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 		
 	end
 
-	if (averageDifference > self.MaxPredictedValuesDifferenceAverage) then
+	if (averageDifference > self.MaxAveragePredictedValuesDifference) then
 		
 		local watchedByPlayerArray = {}
 		
@@ -317,7 +317,7 @@ local function fetchSettings(useOnlineModel: boolean, key: string)
 
 end
 
-function AnomalyDetector.new(maxPlayersToWatchPerPlayer: number, normalThreshold: number, maxPredictedValuesDifferenceAverage: number, useOnlineModel: boolean, key: string)
+function AnomalyDetector.new(maxPlayersToWatchPerPlayer: number, normalThreshold: number, maxAveragePredictedValuesDifference: number, useOnlineModel: boolean, key: string)
 
 	local NewAnomalyDetector = {}
 
@@ -339,15 +339,15 @@ function AnomalyDetector.new(maxPlayersToWatchPerPlayer: number, normalThreshold
 
 	if (typeof(normalThreshold) ~= "number") then error("Normal threshold is not a number value!") end
 	
-	maxPredictedValuesDifferenceAverage = maxPredictedValuesDifferenceAverage or Settings["maxPredictedValuesDifferenceAverage"] or 5
+	maxAveragePredictedValuesDifference = maxAveragePredictedValuesDifference or Settings["maxPredictedValuesDifferenceAverage"] or 5
 
-	if (typeof(maxPredictedValuesDifferenceAverage) ~= "number") then error("Maximum predicted values difference average is not a number value!") end
+	if (typeof(maxAveragePredictedValuesDifference) ~= "number") then error("Maximum predicted values difference average is not a number value!") end
 	
 	NewAnomalyDetector.Settings = Settings
 	
 	NewAnomalyDetector.NormalThreshold = normalThreshold
 
-	NewAnomalyDetector.MaxPredictedValuesDifferenceAverage = maxPredictedValuesDifferenceAverage
+	NewAnomalyDetector.MaxAveragePredictedValuesDifference = maxAveragePredictedValuesDifference
 	
 	NewAnomalyDetector.MaxPlayersToWatchPerPlayer = maxPlayersToWatchPerPlayer
 	

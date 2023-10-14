@@ -203,7 +203,7 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 
 	for watchedByPlayerStringUserId, otherPredictedValue in watchedPlayerReceivedPredictedValues do
 		
-		if (watchedByPlayerStringUserId == watchingPlayerStringUserId) and (numberOfPlayersInServer > 1) then continue end
+		if (watchedByPlayerStringUserId == watchingPlayerStringUserId) then continue end
 		
 		local WatchedByPlayer = convertStringUserIdToPlayer(watchedByPlayerStringUserId)
 

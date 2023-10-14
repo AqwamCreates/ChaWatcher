@@ -8,7 +8,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local DataCollectorDataStore = game:GetService("DataStoreService"):GetDataStore("AqwamChaWatcherDataCollectorDataStore")
 
-local SendPlayerFullDataRemoteEvent: RemoteEvent
+local SendFullDataVectorRemoteEvent: RemoteEvent
 
 local ActivateClientDataCollectorRemoteEvent: RemoteEvent
 
@@ -62,40 +62,6 @@ function DataCollector:saveFullDataOnline()
 
 end
 
-function DataCollector:startUp()
-
-	local ChaWatcherDistributedComputing = ReplicatedStorage:FindFirstChild("ChaWatcherDistributedComputing") or Instance.new("Folder")
-	
-	ActivateClientDataCollectorRemoteEvent = ChaWatcherDistributedComputing:FindFirstChild("ActivateClientDataCollectorRemoteEvent") or Instance.new("RemoteEvent")
-
-	SendPlayerFullDataRemoteEvent = ChaWatcherDistributedComputing:FindFirstChild("SendPlayerFullDataRemoteEvent") or Instance.new("RemoteEvent")
-	
-	ActivateClientDataCollectorRemoteEvent.Name = ActivateClientDataCollectorRemoteEvent
-
-	ChaWatcherDistributedComputing.Name = "ChaWatcherDistributedComputing"
-
-	SendPlayerFullDataRemoteEvent.Name = "SendPlayerFullDataRemoteEvent"
-	
-	ActivateClientDataCollectorRemoteEvent.Parent = ChaWatcherDistributedComputing
-
-	SendPlayerFullDataRemoteEvent.Parent = ChaWatcherDistributedComputing
-	
-	ChaWatcherDistributedComputing.Parent = ReplicatedStorage
-
-	local ChaWatcherClientAnomalyDetector = script.ChaWatcherClientAnomalyDetector
-
-	script.Parent.Parent.Parent.AqwamProprietarySourceCodes:Clone().Parent = ChaWatcherClientAnomalyDetector
-
-	ChaWatcherClientAnomalyDetector.Parent = StarterPlayer
-	
-	SendPlayerFullDataRemoteEvent.OnServerEvent:Connect(function(Player, fullDataVector)
-		
-		self:addFullDataVector(fullDataVector)
-		
-	end)
-
-end
-
 function DataCollector.new(dataStoreKey: string)
 
 	local NewDataCollector = {}
@@ -112,7 +78,17 @@ function DataCollector.new(dataStoreKey: string)
 
 	NewDataCollector.DataStoreKey = dataStoreKey
 	
-	NewDataCollector:startUp()
+	local RemoteEvents = require(script.Parent.ChaWatcherClientSetup):setup()
+	
+	ActivateClientDataCollectorRemoteEvent = RemoteEvents.ActivateClientDataCollectorRemoteEvent
+	
+	SendFullDataVectorRemoteEvent = RemoteEvents.SendFullDataVectorRemoteEvent
+	
+	SendFullDataVectorRemoteEvent.OnServerEvent:Connect(function(_, fullDataVector)
+		
+		NewDataCollector:addFullDataVector(fullDataVector)
+		
+	end)
 
 	return NewDataCollector
 
@@ -140,7 +116,7 @@ function DataCollector:destroy()
 	
 	self:stop()
 	
-	SendPlayerFullDataRemoteEvent:Destroy()
+	SendFullDataVectorRemoteEvent:Destroy()
 	
 	ActivateClientDataCollectorRemoteEvent:Destroy()
 

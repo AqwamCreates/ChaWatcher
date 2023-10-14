@@ -200,11 +200,13 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 	local isNotCorrectFormat = (typeof(watchedPlayerStringUserId) ~= "string") or (typeof(predictedValue) ~= "number")
 		
 	if (isNotCorrectFormat) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end
-
-	self.ReceivedPredictedValues[watchedPlayerStringUserId][watchingPlayerStringUserId] = predictedValue
 	
 	local watchedPlayerReceivedPredictedValues = self.ReceivedPredictedValues[watchedPlayerStringUserId]
+	
+	if not watchedPlayerReceivedPredictedValues then return end
 
+	watchedPlayerReceivedPredictedValues[watchingPlayerStringUserId] = predictedValue
+	
 	local averageDifference = 0
 	
 	local watchedByPlayerArray = {}

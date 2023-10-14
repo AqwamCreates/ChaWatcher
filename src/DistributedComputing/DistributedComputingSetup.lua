@@ -64,7 +64,7 @@ function module:setup()
 		
 		script.Parent.Parent.Parent.AqwamProprietarySourceCodes:Clone().Parent = ChaWatcherDistributedComputingClient
 		
-		ChaWatcherDistributedComputingClient.Parent = StarterPlayer
+		ChaWatcherDistributedComputingClient.Parent = StarterPlayer.StarterPlayerScripts
 		
 		ChaWatcherDistributedComputingClient.Enabled = true
 		

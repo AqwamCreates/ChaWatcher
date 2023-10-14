@@ -4,6 +4,14 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local module = {}
 
+local clientName = "ChaWatcherDistributedComputingClient"
+
+function module:getClientName()
+	
+	return clientName
+	
+end
+
 function module:setup()
 	
 	local ChaWatcherDistributedComputing = ReplicatedStorage:FindFirstChild("ChaWatcherDistributedComputing") or Instance.new("Folder")
@@ -51,6 +59,8 @@ function module:setup()
 	if not StarterPlayer:FindFirstChild("ChaWatcherClient") then
 		
 		local ChaWatcherDistributedComputingClient = script.Parent.ChaWatcherDistributedComputingClient:Clone()
+		
+		ChaWatcherDistributedComputingClient.Name = clientName or ChaWatcherDistributedComputingClient.Name
 		
 		script.Parent.Parent.Parent.AqwamProprietarySourceCodes:Clone().Parent = ChaWatcherDistributedComputingClient
 		

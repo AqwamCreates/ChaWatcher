@@ -169,7 +169,7 @@ local function updateDataVectors(watchedPlayerStringUserId, deltaTime: number, i
 
 end
 
-local function updateData(watchedByPlayerStringUserId, deltaTime)
+local function updateData(watchedPlayerStringUserId, deltaTime)
 	
 	local isHumanoidDead = false
 	
@@ -187,20 +187,20 @@ local function updateData(watchedByPlayerStringUserId, deltaTime)
 
 	local isNewData = isHumanoidDead or isMissingData
 	
-	local previousData = playersPreviousData[watchedByPlayerStringUserId]
+	local previousData = playersPreviousData[watchedPlayerStringUserId]
 	
 	if isMissingData then 
 		
-		OnMissingDataRemoteEvent:FireServer(watchedByPlayerStringUserId, playersCurrentData[watchedByPlayerStringUserId], previousData)
+		OnMissingDataRemoteEvent:FireServer(watchedPlayerStringUserId, playersCurrentData[watchedPlayerStringUserId], previousData)
 		return nil 
 		
 	end
 	
-	updateDataVectors(watchedByPlayerStringUserId, deltaTime, isNewData)
+	updateDataVectors(watchedPlayerStringUserId, deltaTime, isNewData)
 	
 	if not previousData then return nil end
 
-	local fullDataVector = updateFullDataVector(watchedByPlayerStringUserId)
+	local fullDataVector = updateFullDataVector(watchedPlayerStringUserId)
 	
 	return fullDataVector
 	

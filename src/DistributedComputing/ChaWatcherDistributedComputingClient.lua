@@ -135,9 +135,11 @@ local function updateDataVectors(watchedPlayerStringUserId, deltaTime: number, i
 
 	local CharacterPrimaryPart = Character.PrimaryPart
 
-	local Position = CharacterPrimaryPart.Position
+	local CHaracterCFrame = Character:GetPivot()
 
-	local Orientation = CharacterPrimaryPart.Orientation -- in degrees so it is easier to convert to radians later
+	local Position = CHaracterCFrame.Position
+
+	local Orientation = Vector3.new(math.deg(CHaracterCFrame.LookVector.X), math.deg(CHaracterCFrame.LookVector.Y), math.deg(CHaracterCFrame.LookVector.Z)) -- in degrees so it is easier to convert to radians later
 
 	local Velocity = CharacterPrimaryPart.Velocity
 

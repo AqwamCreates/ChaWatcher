@@ -338,8 +338,14 @@ function AnomalyDetector:stop()
 end
 
 function AnomalyDetector:destroy()
-
+	
 	self:stop()
+	
+	SendPredictedValueRemoteEvent:Destroy()
+
+	SetPlayerToWatchRemoteEvent:Destroy()
+
+	ActivateClientRemoteEvent:Destroy()
 
 	table.clear(self)
 

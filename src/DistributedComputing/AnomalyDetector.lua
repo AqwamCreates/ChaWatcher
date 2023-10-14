@@ -175,6 +175,8 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, Watche
 
 	for watchedByPlayerStringUserId, otherPredictedValue in watchedPlayerReceivedPredictedValues do
 		
+		if (watchedByPlayerStringUserId == watchingPlayerStringUserId) and (#Players:GetPlayers() > 1) then continue end
+		
 		local PlayerToSet: Player = Players:GetPlayerByUserId(tonumber(watchedByPlayerStringUserId))
 
 		if not PlayerToSet then continue end

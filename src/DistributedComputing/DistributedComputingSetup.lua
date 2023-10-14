@@ -1,10 +1,10 @@
-local StarterPlayerScripts = game:GetService("StarterPlayer").StarterPlayerScripts
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local module = {}
+local StarterPlayerScripts = game:GetService("StarterPlayer").StarterPlayerScripts
 
 local clientName = "ChaWatcherDistributedComputingClient"
+
+local module = {}
 
 function module:getClientName()
 	

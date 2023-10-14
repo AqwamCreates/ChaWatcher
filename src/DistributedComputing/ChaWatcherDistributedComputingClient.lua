@@ -88,9 +88,7 @@ local function checkIfIsFlying(Character: Model)
 
 	raycastParameters.FilterType = Enum.RaycastFilterType.Exclude
 
-	local result = workspace:Raycast(CharacterPosition, DirectionVector, raycastParameters)
-
-	if not result then 
+	if not workspace:Raycast(CharacterPosition, DirectionVector, raycastParameters) then 
 
 		return true
 

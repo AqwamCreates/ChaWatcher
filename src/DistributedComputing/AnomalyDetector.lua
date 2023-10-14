@@ -198,22 +198,26 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 	local averageDifference = 0
 	
 	local watchedByPlayerStringUserIdsArray = {}
+	
+	local watchedByPlayerArray = {}
 
 	for watchedByPlayerStringUserId, otherPredictedValue in watchedPlayerReceivedPredictedValues do
 		
 		if (watchedByPlayerStringUserId == watchingPlayerStringUserId) and (numberOfPlayersInServer > 1) then continue end
 		
-		local WatchingByPlayer = convertStringUserIdToPlayer(watchedByPlayerStringUserId)
+		local WatchedByPlayer = convertStringUserIdToPlayer(watchedByPlayerStringUserId)
 
-		if not WatchingByPlayer then continue end
+		if not WatchedByPlayer then continue end
 		
-		if (WatchingByPlayer:GetNetworkPing() > 1) then continue end
+		if (WatchedByPlayer:GetNetworkPing() > 1) then continue end
 
 		if (typeof(otherPredictedValue) ~= "number") then continue end
 
 		averageDifference += math.abs(predictedValue - otherPredictedValue)
 		
 		table.insert(watchedByPlayerStringUserIdsArray, watchedByPlayerStringUserId)
+		
+		table.insert(watchedByPlayerArray, WatchedByPlayer)
 
 	end
 	
@@ -227,19 +231,11 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 
 	if (averageDifference > self.MaxAveragePredictedValuesDifference) then
 		
-		local watchedByPlayerArray = {}
-		
 		local predictedValuesArray = {}
 		
-		for watchedByPlayerStringUserId, otherPredictedValue in watchedPlayerReceivedPredictedValues do
+		for watchedByPlayerStringUserId, _ in watchedByPlayerStringUserIdsArray do
 			
-			local WatchingByPlayer = convertStringUserIdToPlayer(watchedByPlayerStringUserId)
-				
-			if not WatchingByPlayer then continue end
-				
-			table.insert(watchedByPlayerArray, WatchingByPlayer)
-			
-			table.insert(predictedValuesArray, otherPredictedValue)
+			table.insert(watchedByPlayerStringUserId, watchedPlayerReceivedPredictedValues[watchedByPlayerStringUserId])
 			
 		end
 		

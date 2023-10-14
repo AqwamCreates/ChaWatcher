@@ -35,6 +35,12 @@ AnomalyDetector:bindToMissingData(function(WatchingPlayer, WatchedPlayer, curren
 
 end)
 
+AnomalyDetector:bindToPredictedValueReceived(function(WatchingPlayer, WatchedPlayer, predictedValue) -- Runs a function on predicted value received
+
+	print(WatchedPlayer.Name .. " has missing data!")
+
+end)
+
 AnomalyDetector:bindToClientAccessedRemoteEvent(function(Player) -- Runs a function if cannot create a data vector.
 
 	print(Player.Name .. " tried to change access remote events!")

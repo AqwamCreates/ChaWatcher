@@ -159,7 +159,7 @@ function AnomalyDetector:onPlayerAdded(Player: Player)
 	
 end
 
-function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, WatchedPlayer: Player, predictedValue)
+function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, WatchedPlayer: Player, predictedValue: number)
 	
 	local numberOfPlayersInServer = #Players:GetPlayers()
 	

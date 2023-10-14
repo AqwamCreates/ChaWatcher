@@ -291,6 +291,10 @@ function AnomalyDetector.new(maxPlayersToWatchPerPlayer: number, normalThreshold
 	local Settings = fetchSettings(useOnlineModel, key)
 
 	if not Settings then error("No Settings Found!") end
+	
+	maxPlayersToWatchPerPlayer = maxPlayersToWatchPerPlayer or Settings["maxPlayersToWatchPerPlayer"] or 2
+
+	if (typeof(maxPlayersToWatchPerPlayer) ~= "number") then error("Maximum players to watch is not a number value!") end
 
 	normalThreshold = normalThreshold or Settings["normalThreshold"]
 
@@ -299,10 +303,6 @@ function AnomalyDetector.new(maxPlayersToWatchPerPlayer: number, normalThreshold
 	maxPredictedValuesDifferenceAverage = maxPredictedValuesDifferenceAverage or Settings["maxPredictedValuesDifferenceAverage"] or 5
 
 	if (typeof(maxPredictedValuesDifferenceAverage) ~= "number") then error("Maximum predicted values difference average is not a number value!") end
-	
-	maxPlayersToWatchPerPlayer = maxPlayersToWatchPerPlayer or Settings["maxPlayersToWatchPerPlayer"] or 2
-	
-	if (typeof(maxPlayersToWatchPerPlayer) ~= "number") then error("Maximum players to watch is not a number value!") end
 	
 	NewAnomalyDetector.Settings = Settings
 	

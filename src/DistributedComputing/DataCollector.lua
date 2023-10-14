@@ -86,9 +86,13 @@ function DataCollector:createConnectionsArray()
 
 	end)
 	
-	local OnMissingDataRemoteEventConnection = OnMissingDataRemoteEvent.OnServerEvent:Connect(function(WatchingPlayer, WatchedPlayer, currentDataVector, previousDataVector)
+	local OnMissingDataRemoteEventConnection = OnMissingDataRemoteEvent.OnServerEvent:Connect(function(WatchingPlayer, watchedPlayerStringUserId, currentDataVector, previousDataVector)
 		
-		if (typeof(WatchingPlayer) ~= "Player") or (typeof(WatchedPlayer) ~= "Player") then return end
+		if (typeof(WatchingPlayer) ~= "Player") or (typeof(watchedPlayerStringUserId) ~= "string") then return end
+		
+		local WatchedPlayer = Players:GetPlayerByUserId(tonumber(watchedPlayerStringUserId))
+		
+		if not WatchedPlayer then return end
 		
 		if self.OnMissingDataFunction then self.OnMissingDataFunction(WatchingPlayer, WatchedPlayer, currentDataVector, previousDataVector) end
 		

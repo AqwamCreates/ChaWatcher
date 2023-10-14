@@ -132,19 +132,23 @@ end
 
 function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, WatchedPlayer: Player, predictedValue)
 	
-	if (WatchedPlayer == WatchingPlayer) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end 
+	if (WatchedPlayer == WatchingPlayer) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end
 	
-	if ((typeof(WatchedPlayer) ~= "Player") or (typeof(predictedValue) ~= "number")) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end
+	local watchingPlayerStringUserId = tostring(WatchingPlayer.UserId)
+	
+	local watchedPlayerStringUserId = tostring(WatchedPlayer.UserId)
+	
+	local isNotCorrectFormat = (typeof(WatchedPlayer) ~= "Player") or (typeof(predictedValue) ~= "number")
+		
+	if (isNotCorrectFormat) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end
 
-	local targetPlayerStringUserId = tostring(WatchedPlayer.UserId)
-
-	self.ReceivedPredictedValues[targetPlayerStringUserId][tostring(WatchingPlayer.UserId)] = predictedValue
+	self.ReceivedPredictedValues[watchedPlayerStringUserId][watchingPlayerStringUserId] = predictedValue
 
 	local averageDifference = 0
 	
 	local watchedByPlayerArray = {}
 
-	for watchedByPlayerStringUserId, otherPredictedValue in self.ReceivedPredictedValues[targetPlayerStringUserId] do
+	for watchedByPlayerStringUserId, otherPredictedValue in self.ReceivedPredictedValues[watchedPlayerStringUserId] do
 
 		if (typeof(otherPredictedValue) ~= "number") then continue end
 
@@ -168,7 +172,7 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, Watche
 		
 		local predictedValuesArray = {}
 		
-		for watchedByPlayerStringUserId, otherPredictedValue in self.ReceivedPredictedValues[targetPlayerStringUserId] do
+		for watchedByPlayerStringUserId, otherPredictedValue in self.ReceivedPredictedValues[watchedPlayerStringUserId] do
 			
 			local PlayerToSet = Players:GetPlayerByUserId(tonumber(watchedByPlayerStringUserId))
 				

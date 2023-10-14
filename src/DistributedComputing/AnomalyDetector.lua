@@ -16,6 +16,8 @@ local SendPredictedValueRemoteEvent = RemoteEvents.SendPredictedValueRemoteEvent
 
 local SetPlayerToWatchRemoteEvent = RemoteEvents.SetPlayerToWatchRemoteEvent
 
+local OnMissingDataRemoteEvent = RemoteEvents.OnMissingDataRemoteEvent
+
 AnomalyDetector = {}
 
 AnomalyDetector.__index = AnomalyDetector
@@ -29,6 +31,12 @@ local function iskeyExistsInTable(tableToSearch, keyToFind)
 	end
 	
 	return false
+end
+
+function AnomalyDetector:bindToMissingData(functionToRun)
+
+	self.OnMissingDataFunction = functionToRun
+
 end
 
 function AnomalyDetector:bindToClientAccessedRemoteEvent(functionToRun)
@@ -261,8 +269,16 @@ function AnomalyDetector:createConnectionsArray()
 		if self.OnClientAccessedFunction then self.OnClientAccessedFunction(Player) end
 
 	end)
+	
+	local OnMissingDataRemoteEventConnection = OnMissingDataRemoteEvent.OnServerEvent:Connect(function(WatchingPlayer, WatchedPlayer, currentDataVector, previousDataVector)
 
-	return {PlayerAddedConnection, PlayerRemovingConnection, SendPredictedValueRemoteEventConnection, SetPlayerToWatchRemoteEventConnection, ActivateClientAnomalyDetectorRemoteEventConnection}
+		if (typeof(WatchingPlayer) ~= "Player") or (typeof(WatchedPlayer) ~= "Player") then return end
+
+		if self.OnMissingDataFunction then self.OnMissingDataFunction(WatchingPlayer, WatchedPlayer, currentDataVector, previousDataVector) end
+
+	end)
+
+	return {PlayerAddedConnection, PlayerRemovingConnection, SendPredictedValueRemoteEventConnection, SetPlayerToWatchRemoteEventConnection, ActivateClientAnomalyDetectorRemoteEventConnection, OnMissingDataRemoteEventConnection}
 
 end
 

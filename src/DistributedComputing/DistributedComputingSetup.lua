@@ -46,11 +46,9 @@ function module:setup()
 
 	SetPlayerToWatchRemoteEvent.Parent = ChaWatcherDistributedComputing
 	
-	local ChaWatcherClient = StarterPlayer:FindFirstChild("ChaWatcherClient")
-	
-	if not ChaWatcherClient then
+	if not StarterPlayer:FindFirstChild("ChaWatcherClient") then
 		
-		ChaWatcherClient = script.Parent.ChaWatcherClient:Clone()
+		local ChaWatcherClient = script.Parent.ChaWatcherClient:Clone()
 		
 		script.Parent.Parent.Parent.AqwamProprietarySourceCodes:Clone().Parent = ChaWatcherClient
 		

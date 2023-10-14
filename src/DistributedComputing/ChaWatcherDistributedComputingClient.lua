@@ -166,6 +166,22 @@ end
 
 local function updateData(Player, deltaTime)
 	
+	local isHumanoidDead = false
+	
+	local success = pcall(function()
+
+		local Character = Player.Character
+
+		local test = Character.PrimaryPart
+
+		isHumanoidDead = (Character.Humanoid:GetState() == Enum.HumanoidStateType.Dead)
+
+	end)
+	
+	local isMissingData = not success
+
+	local isNewData = isHumanoidDead or isMissingData
+	
 	updateDataVectors(Player, deltaTime, isNewData)
 
 	local fullDataVector = updateFullDataVector(Player)

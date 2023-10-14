@@ -205,8 +205,6 @@ local function updateData(watchedPlayerStringUserId, deltaTime)
 	
 	local previousData = playersPreviousData[watchedPlayerStringUserId]
 	
-
-	
 	if isMissingData then 
 		
 		OnMissingDataRemoteEvent:FireServer(watchedPlayerStringUserId, playersCurrentData[watchedPlayerStringUserId], previousData)

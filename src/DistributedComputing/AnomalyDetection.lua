@@ -160,12 +160,14 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, Watche
 	if (isNotCorrectFormat) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end
 
 	self.ReceivedPredictedValues[watchedPlayerStringUserId][watchingPlayerStringUserId] = predictedValue
+	
+	local watchedPlayerReceivedPredictedValues = self.ReceivedPredictedValues[watchedPlayerStringUserId]
 
 	local averageDifference = 0
 	
 	local watchedByPlayerArray = {}
 
-	for watchedByPlayerStringUserId, otherPredictedValue in self.ReceivedPredictedValues[watchedPlayerStringUserId] do
+	for watchedByPlayerStringUserId, otherPredictedValue in watchedPlayerReceivedPredictedValues do
 
 		if (typeof(otherPredictedValue) ~= "number") then continue end
 
@@ -189,7 +191,7 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, Watche
 		
 		local predictedValuesArray = {}
 		
-		for watchedByPlayerStringUserId, otherPredictedValue in self.ReceivedPredictedValues[watchedPlayerStringUserId] do
+		for watchedByPlayerStringUserId, otherPredictedValue in watchedPlayerReceivedPredictedValues do
 			
 			local PlayerToSet = Players:GetPlayerByUserId(tonumber(watchedByPlayerStringUserId))
 				

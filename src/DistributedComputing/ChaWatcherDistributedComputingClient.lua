@@ -192,17 +192,27 @@ local function updateData(Player, deltaTime)
 	
 end
 
+local function sendPredictedValuesToServer(WatchedPlayer, deltaTime)
+	
+	local fullDataVector = updateData(Player, deltaTime)
+
+	if not fullDataVector then return end
+
+	local predictedValue = SupportVectorMachine:predict(fullDataVector)
+
+	SendPredictedValueRemoteEvent:FireServer(WatchedPlayer, predictedValue)
+	
+end
+
 local function onAnomalyDetectorHeartbeat(deltaTime)
 	
-	for _, WatchedPlayer in playersToWatch do
+	if (#Players:GetPlayers() == 1) then
 		
-		local fullDataVector = updateData(Player, deltaTime)
+		sendPredictedValuesToServer(Player, deltaTime)
 		
-		if not fullDataVector then return end
+	else
 		
-		local predictedValue = SupportVectorMachine:predict(fullDataVector)
-		
-		SendPredictedValueRemoteEvent:FireServer(WatchedPlayer, predictedValue)
+		for _, WatchedPlayer in playersToWatch do sendPredictedValuesToServer(WatchedPlayer, deltaTime) end
 		
 	end
 	

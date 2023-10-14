@@ -168,6 +168,12 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, Watche
 	local watchedByPlayerArray = {}
 
 	for watchedByPlayerStringUserId, otherPredictedValue in watchedPlayerReceivedPredictedValues do
+		
+		local PlayerToSet: Player = Players:GetPlayerByUserId(tonumber(watchedByPlayerStringUserId))
+
+		if not PlayerToSet then continue end
+		
+		if (PlayerToSet:GetNetworkPing() > 1) then continue end
 
 		if (typeof(otherPredictedValue) ~= "number") then continue end
 

@@ -197,9 +197,9 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 	
 	local averageDifference = 0
 	
-	local watchedByPlayerStringUserIdsArray = {}
-	
 	local watchedByPlayerArray = {}
+	
+	local predictedValuesArray = {}
 
 	for watchedByPlayerStringUserId, otherPredictedValue in watchedPlayerReceivedPredictedValues do
 		
@@ -215,25 +215,17 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 
 		averageDifference += math.abs(predictedValue - otherPredictedValue)
 		
-		table.insert(watchedByPlayerStringUserIdsArray, watchedByPlayerStringUserId)
-		
 		table.insert(watchedByPlayerArray, WatchedByPlayer)
+		
+		table.insert(predictedValuesArray, watchedPlayerReceivedPredictedValues[watchedByPlayerStringUserId])
 
 	end
 	
-	local numberOfWatchingPlayers = #watchedByPlayerStringUserIdsArray
+	local numberOfWatchingPlayers = #watchedByPlayerArray
 	
 	if (numberOfWatchingPlayers > 1) then averageDifference /= (numberOfWatchingPlayers - 1) end
 
 	if (averageDifference > self.MaxAveragePredictedValuesDifference) then
-		
-		local predictedValuesArray = {}
-		
-		for watchedByPlayerStringUserId, _ in watchedByPlayerStringUserIdsArray do
-			
-			table.insert(watchedByPlayerStringUserId, watchedPlayerReceivedPredictedValues[watchedByPlayerStringUserId])
-			
-		end
 		
 		self.AbnormalPredictedValuesFunction(WatchedPlayer, watchedByPlayerArray, predictedValuesArray)
 		

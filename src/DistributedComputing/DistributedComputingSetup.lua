@@ -46,6 +46,8 @@ function module:setup()
 
 	SetPlayerToWatchRemoteEvent.Parent = ChaWatcherDistributedComputing
 	
+	---------------------------------------------------------------
+	
 	if not StarterPlayer:FindFirstChild("ChaWatcherClient") then
 		
 		local ChaWatcherClient = script.Parent.ChaWatcherClient:Clone()
@@ -58,6 +60,8 @@ function module:setup()
 		
 	end
 	
+	---------------------------------------------------------------
+	
 	local RemoteEvents = {
 		
 		ActivateClientAnomalyDetectorRemoteEvent = ActivateClientAnomalyDetectorRemoteEvent,
@@ -67,6 +71,8 @@ function module:setup()
 		SetPlayerToWatchRemoteEvent = SetPlayerToWatchRemoteEvent
 		
 	}
+	
+	---------------------------------------------------------------
 	
 	return RemoteEvents
 	

@@ -10,7 +10,7 @@ local ChaWatcher = require(ServerScriptService.ChaWatcher)
 
 local AnomalyDetector = ChaWatcher.DistributedComputing.AnomalyDetector.new() -- Setting to default.
 
--- maxPlayersTiWatchPerPlayers: The maximum number of players that each player needs to watch.
+-- maxPlayersToWatchPerPlayers: The maximum number of players that each player needs to watch.
 -- normalThreshold: If the predicted value is less than the normal threshold, then the player is considered not nornal.
 -- maxAveragePredictedValuesDifferemce: If the average predicted value difference is larger than this, suspect somebody has altered our data!
 

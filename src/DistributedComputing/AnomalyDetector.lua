@@ -133,7 +133,7 @@ function AnomalyDetector:onPlayerAdded(Player: Player)
 		
 		SetPlayerToWatchRemoteEvent:FireClient(PlayerToSet, self.PlayerWatchList[randomStringUserId])
 		
-		table.remove(randomStringUserId, randomIndex)
+		table.remove(otherStringUserIdArray, randomIndex)
 		
 		numberOfWatchedBy += 1
 		
@@ -164,6 +164,8 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, Watche
 	local numberOfPlayersInServer = #Players:GetPlayers()
 	
 	if (WatchedPlayer == WatchingPlayer) and (numberOfPlayersInServer > 1) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer, WatchedPlayer, predictedValue) return end
+	
+	print(tostring(WatchedPlayer == WatchingPlayer))
 	
 	local watchingPlayerStringUserId = tostring(WatchingPlayer.UserId)
 	

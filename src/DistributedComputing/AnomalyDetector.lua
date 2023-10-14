@@ -69,6 +69,12 @@ function AnomalyDetector:bindToAbnormalPredictedValues(functionToRun)
 	
 end
 
+function AnomalyDetector:bindToPredictedValuesReceived(functionToRun)
+	
+	self.PredictedValuesReceivedFunction = functionToRun
+	
+end
+
 function AnomalyDetector:getStringUserIdsWithEmptyWatchSlots(stringUserIdExeption)
 	
 	local stringUserIdArray = {}
@@ -178,6 +184,8 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 	local watchingPlayerStringUserId = tostring(WatchingPlayer.UserId)
 	
 	local WatchedPlayer = convertStringUserIdToPlayer(watchedPlayerStringUserId)
+	
+	if self.PredictedValuesReceivedFunction then self.PredictedValuesReceivedFunction(WatchingPlayer, WatchedPlayer, predictedValue) end
 	
 	if (watchingPlayerStringUserId == watchedPlayerStringUserId) and (numberOfPlayersInServer > 1) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer, WatchedPlayer, predictedValue) return end
 	

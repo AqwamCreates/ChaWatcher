@@ -14,9 +14,17 @@ local ActivateClientDataCollectorRemoteEvent = RemoteEvents.ActivateClientDataCo
 
 local SendFullDataVectorRemoteEvent = RemoteEvents.SendFullDataVectorRemoteEvent
 
+local OnMissingDataRemoteEvent = RemoteEvents.OnMissingDataRemoteEvent
+
 DataCollector = {}
 
 DataCollector.__index = DataCollector
+
+function DataCollector:bindToMissingData(functionToRun)
+	
+	self.OnMissingDataFunction = functionToRun
+	
+end
 
 function DataCollector:addFullDataVector(fullDataVector)
 	
@@ -78,7 +86,13 @@ function DataCollector:createConnectionsArray()
 
 	end)
 	
-	return {PlayerAddedConnection, SendFullDataVectorRemoteEventConnection}
+	local OnMissingDataRemoteEventConnection = OnMissingDataRemoteEvent.OnServerEvent:Connect(function(WatchingPlayer, WatchedPlayer, currentDataVector, previousDataVector)
+		
+		if self.OnMissingDataFunction then self.OnMissingDataFunction(WatchingPlayer, WatchedPlayer, currentDataVector, previousDataVector) end
+		
+	end)
+	
+	return {PlayerAddedConnection, SendFullDataVectorRemoteEventConnection, OnMissingDataRemoteEventConnection}
 	
 end
 

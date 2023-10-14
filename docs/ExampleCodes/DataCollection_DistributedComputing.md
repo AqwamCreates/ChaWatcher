@@ -8,7 +8,7 @@ local MatrixL = require(ServerScriptService.MatrixL)
 
 local ChaWatcher = require(ServerScriptService.ChaWatcher)
 
-local DataCollector = ChaWatcher.Original.DataCollector.new(true, "1")
+local DataCollector = ChaWatcher.Original.DataCollector.new() -- Setting to default.
 
 DataCollector:bindToMissingData(function(Player, currentDataVector, previousDataVector) -- Runs a function if cannot create a data vector.
 

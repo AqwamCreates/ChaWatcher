@@ -22,6 +22,12 @@ You can get the library from the Roblox's Marketplace [here](https://create.robl
 
 * [Anomaly Detection](ExampleCodes/AnomalyDetection.md)
 
+### Original Version
+
+* [Data Collection](ExampleCodes/DataCollection_DistributedComputing.md)
+
+* [Anomaly Detection](ExampleCodes/AnomalyDetection_DistributedComputing.md)
+
 ## Difference between original and custom versions:
 
 * Custom version has these functions for both DataCollector and AnomalyDetector that can be called outside of their module scripts:

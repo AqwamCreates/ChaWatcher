@@ -35,6 +35,12 @@ AnomalyDetector:bindToMissingData(function(WatchingPlayer, WatchedPlayer, curren
 
 end)
 
+AnomalyDetector:bindToClientAccessedRemoteEvent(function(Player) -- Runs a function if cannot create a data vector.
+
+	print(Player.Name .. " tried to change the data!")
+
+end)
+
 AnomalyDetector:start() -- Starts detecting outlier data.
 AnomalyDetector:stop()  -- Stops detecting outlier data.
 AnomalyDetector:start() -- Starts detecting outlier data. Again!

@@ -97,31 +97,59 @@ function AnomalyDetector:getStringUserIdsWithEmptyWatchSlots(stringUserIdExeptio
 	
 end
 
-function AnomalyDetector:onPlayerRemoving(Player: Player)
+function AnomalyDetector:assignWatchListRandomly(stringUserId)
+	
+	local numberOfWatchedBy = 0
+	
+	local otherStringUserIdArray = self:getStringUserIdsWithEmptyWatchSlots(stringUserId)
 
-	local UserId = Player.UserId
+	while (numberOfWatchedBy < self.MaxPlayersToWatchPerPlayer) and (#otherStringUserIdArray > 0) and (#Players:GetPlayers() > 1) do
 
-	local stringUserId = tostring(UserId)
+		local randomIndex = Random.new():NextInteger(1, #otherStringUserIdArray)
 
-	for watchedByPlayerStringUserId, _ in self.ReceivedPredictedValues[stringUserId] do
+		local randomStringUserId = otherStringUserIdArray[randomIndex]
 
-		local playerWatchList = self.PlayerWatchListStringUserIds[watchedByPlayerStringUserId] 
+		local PlayerToSet = Players:GetPlayerByUserId(tonumber(randomStringUserId))
 
-		local index = table.find(playerWatchList, UserId)
-
-		if index then table.remove(playerWatchList, index) end
-		
-		local PlayerToSet = convertStringUserIdToPlayer(watchedByPlayerStringUserId)
-		
 		if not PlayerToSet then continue end
-		
-		SetPlayerToWatchRemoteEvent:FireClient(PlayerToSet, self.PlayerWatchListStringUserIds[watchedByPlayerStringUserId])
+
+		table.insert(self.PlayerWatchListStringUserIds[randomStringUserId], stringUserId)
+
+		SetPlayerToWatchRemoteEvent:FireClient(PlayerToSet, self.PlayerWatchListStringUserIds[randomStringUserId])
+
+		table.remove(otherStringUserIdArray, randomIndex)
+
+		numberOfWatchedBy += 1
+
+	end 
+	
+end
+
+function AnomalyDetector:reassignWatchListForAllPlayersRandomly()
+	
+	self.isWatchListCurrentlyReassigned = true
+
+	local PlayersArray = Players:GetPlayers()
+
+	for _, OtherPlayer in PlayersArray do -- Delete everything first before 
+
+		local stringUserId = tostring(OtherPlayer.UserId)
+
+		self.ReceivedPredictedValues[stringUserId] = {}
+
+		self.PlayerWatchListStringUserIds[stringUserId] = {}
 
 	end
 
-	self.ReceivedPredictedValues[stringUserId] = nil
+	for _, OtherPlayer in PlayersArray do self:assignWatchListRandomly(tostring(OtherPlayer.UserId)) end
+
+	self.isWatchListCurrentlyReassigned = false
 	
-	self.PlayerWatchListStringUserIds[stringUserId] = nil
+end
+
+function AnomalyDetector:onPlayerRemoving()
+	
+	self:reassignWatchListForAllPlayersRandomly()
 
 end
 
@@ -130,54 +158,16 @@ function AnomalyDetector:onPlayerAdded(Player: Player)
 	ActivateClientAnomalyDetectorRemoteEvent:FireClient(Player, true, self.Settings)
 	
 	local stringUserId = tostring(Player.UserId)
-
-	local otherStringUserIdArray = self:getStringUserIdsWithEmptyWatchSlots(stringUserId)
 	
-	local stringUserIdToWatchArray = {}
+	self:reassignWatchListForAllPlayersRandomly()
 	
-	local numberOfWatchedBy = 0
-	
-	while (numberOfWatchedBy < self.MaxPlayersToWatchPerPlayer) and (#otherStringUserIdArray > 0) and (#Players:GetPlayers() > 1) do
-		
-		local randomIndex = Random.new():NextInteger(1, #otherStringUserIdArray)
-		
-		local randomStringUserId = otherStringUserIdArray[randomIndex]
-		
-		local PlayerToSet = Players:GetPlayerByUserId(tonumber(randomStringUserId))
-		
-		if not PlayerToSet then continue end
-		
-		table.insert(self.PlayerWatchListStringUserIds[randomStringUserId], stringUserId)
-		
-		SetPlayerToWatchRemoteEvent:FireClient(PlayerToSet, self.PlayerWatchListStringUserIds[randomStringUserId])
-		
-		table.remove(otherStringUserIdArray, randomIndex)
-		
-		numberOfWatchedBy += 1
-		
-	end 
-	
-	for otherStringUserId, watchedByPlayerStringUserIds in self.ReceivedPredictedValues do
-		
-		local numberOfPlayersWatchedByForOtherPlayer = 0
-		
-		for watchedByPlayerStringUserId, otherPredictedValue in watchedByPlayerStringUserIds do numberOfPlayersWatchedByForOtherPlayer += 1 end
-		
-		if (numberOfPlayersWatchedByForOtherPlayer >= self.MaxPlayersToWatchPerPlayer) then continue end
-		
-		table.insert(stringUserIdToWatchArray, otherStringUserId)
-		
-	end
-	
-	self.PlayerWatchListStringUserIds[stringUserId] = stringUserIdToWatchArray
-	
-	self.ReceivedPredictedValues[stringUserId] = {}
-	
-	SetPlayerToWatchRemoteEvent:FireClient(Player, stringUserIdToWatchArray)
+	SetPlayerToWatchRemoteEvent:FireClient(Player, self.PlayerWatchListStringUserIds[stringUserId])
 	
 end
 
 function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watchedPlayerStringUserId: number, predictedValue: number, fullDataVector)
+	
+	if self.isWatchListCurrentlyReassigned then return end
 	
 	local numberOfPlayersInServer = #Players:GetPlayers()
 	
@@ -348,6 +338,8 @@ function AnomalyDetector.new(maxPlayersToWatchPerPlayer: number, normalThreshold
 	NewAnomalyDetector.ConnectionsArray = {}
 	
 	NewAnomalyDetector.ReceivedPredictedValues = {}
+	
+	NewAnomalyDetector.isWatchListCurrentlyReassigned = false
 
 	return NewAnomalyDetector
 

@@ -26,6 +26,8 @@ function module:setup()
 
 	local SetPlayerToWatchRemoteEvent = ChaWatcherDistributedComputing:FindFirstChild("SetPlayerToWatchRemoteEvent") or Instance.new("RemoteEvent")
 	
+	local OnMissingDataRemoteEvent = ChaWatcherDistributedComputing:FindFirstChild("OnMissingDataRemoteEvent") or Instance.new("RemoteEvent")
+	
 	---------------------------------------------------------------
 	
 	ChaWatcherDistributedComputing.Name = "ChaWatcherDistributedComputing"
@@ -40,6 +42,8 @@ function module:setup()
 
 	SetPlayerToWatchRemoteEvent.Name = "SetPlayerToWatchRemoteEvent"
 	
+	OnMissingDataRemoteEvent.Name = "OnMissingDataRemoteEvent"
+	
 	---------------------------------------------------------------
 	
 	ChaWatcherDistributedComputing.Parent = ReplicatedStorage
@@ -53,6 +57,8 @@ function module:setup()
 	SendFullDataVectorRemoteEvent.Parent = ChaWatcherDistributedComputing
 
 	SetPlayerToWatchRemoteEvent.Parent = ChaWatcherDistributedComputing
+	
+	OnMissingDataRemoteEvent.Parent = ChaWatcherDistributedComputing
 	
 	---------------------------------------------------------------
 	
@@ -78,7 +84,8 @@ function module:setup()
 		ActivateClientDataCollectorRemoteEvent = ActivateClientDataCollectorRemoteEvent,
 		SendPredictedValueRemoteEvent = SendPredictedValueRemoteEvent,
 		SendFullDataVectorRemoteEvent = SendFullDataVectorRemoteEvent,
-		SetPlayerToWatchRemoteEvent = SetPlayerToWatchRemoteEvent
+		SetPlayerToWatchRemoteEvent = SetPlayerToWatchRemoteEvent,
+		OnMissingDataRemoteEvent = OnMissingDataRemoteEvent,
 		
 	}
 	

@@ -1,259 +1,91 @@
-local Players = game:GetService("Players")
-
-local RunService = game:GetService("RunService")
-
-local StarterPlayer = game:GetService("StarterPlayer")
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local ChaWatcherDistributedComputing = ReplicatedStorage:WaitForChild("ChaWatcherDistributedComputing")
+local StarterPlayerScripts = game:GetService("StarterPlayer").StarterPlayerScripts
 
-local ActivateClientAnomalyDetectorRemoteEvent =  ChaWatcherDistributedComputing.ActivateClientAnomalyDetectorRemoteEvent
+local clientName = "ChaWatcherDistributedComputingClient"
 
-local ActivateClientDataCollectorRemoteEvent = ChaWatcherDistributedComputing.ActivateClientDataCollectorRemoteEvent
+local module = {}
 
-local SendPredictedValueRemoteEvent = ChaWatcherDistributedComputing.SendPredictedValueRemoteEvent
+function module:getClientName()
+	
+	return clientName
+	
+end
 
-local SendFullDataVectorRemoteEvent = ChaWatcherDistributedComputing.SendFullDataVectorRemoteEvent
+function module:setup()
+	
+	local ChaWatcherDistributedComputing = ReplicatedStorage:FindFirstChild("ChaWatcherDistributedComputing") or Instance.new("Folder")
+	
+	local ActivateClientAnomalyDetectorRemoteEvent =  ChaWatcherDistributedComputing:FindFirstChild("ActivateClientAnomalyDetectorRemoteEvent") or Instance.new("RemoteEvent")
+	
+	local ActivateClientDataCollectorRemoteEvent = ChaWatcherDistributedComputing:FindFirstChild("ActivateClientDataCollectorRemoteEvent") or Instance.new("RemoteEvent")
 
-local SetPlayerToWatchRemoteEvent = ChaWatcherDistributedComputing.SetPlayerToWatchRemoteEvent
+	local SendPredictedValueRemoteEvent = ChaWatcherDistributedComputing:FindFirstChild("SendPredictedValueRemoteEvent") or Instance.new("RemoteEvent")
+	
+	local SendFullDataVectorRemoteEvent = ChaWatcherDistributedComputing:FindFirstChild("SendFullDataVectorRemoteEvent") or Instance.new("RemoteEvent")
 
-local SupportVectorMachine = require(script.AqwamProprietarySourceCodes.SupportVectorMachine).new()
+	local SetPlayerToWatchRemoteEvent = ChaWatcherDistributedComputing:FindFirstChild("SetPlayerToWatchRemoteEvent") or Instance.new("RemoteEvent")
+	
+	---------------------------------------------------------------
+	
+	ChaWatcherDistributedComputing.Name = "ChaWatcherDistributedComputing"
+	
+	ActivateClientAnomalyDetectorRemoteEvent.Name = "ActivateClientAnomalyDetectorRemoteEvent"
+	
+	ActivateClientDataCollectorRemoteEvent.Name = "ActivateClientDataCollectorRemoteEvent"
 
-local Player = Players.LocalPlayer
+	SendPredictedValueRemoteEvent.Name = "SendPredictedValueRemoteEvent"
+	
+	SendFullDataVectorRemoteEvent.Name = "SendFullDataVectorRemoteEvent"
 
-local Character = Player.Character
+	SetPlayerToWatchRemoteEvent.Name = "SetPlayerToWatchRemoteEvent"
+	
+	---------------------------------------------------------------
+	
+	ChaWatcherDistributedComputing.Parent = ReplicatedStorage
 
-local playersPreviousData = {}
+	ActivateClientAnomalyDetectorRemoteEvent.Parent = ChaWatcherDistributedComputing
+	
+	ActivateClientDataCollectorRemoteEvent.Parent = ChaWatcherDistributedComputing
 
-local playersCurrentData = {}
+	SendPredictedValueRemoteEvent.Parent = ChaWatcherDistributedComputing
+	
+	SendFullDataVectorRemoteEvent.Parent = ChaWatcherDistributedComputing
 
-local playersToWatch = {}
-
-local AnomalyDetectorHeartbeatConnection
-
-local DataCollectorHearbeatConnection
-
-local function updateFullDataVector(Player)
-
-	local UserId = Player.UserId
-
-	local stringUserId = tostring(UserId)
-
-	local previousDataVector = playersPreviousData[stringUserId] 
-
-	local currentDataVector = playersCurrentData[stringUserId] 
-
-	local changeInPosition = currentDataVector[1] - previousDataVector[1]
-
-	local changeInOrientation = currentDataVector[2] - previousDataVector[2]
-
-	local currentVelocity = currentDataVector[3] 
-
-	local previousVelocity = previousDataVector[3]
-
-	local changeInVelocity = currentVelocity - previousVelocity
-
-	local timeSpentFlying = currentDataVector[4]
-
-	local distance = changeInPosition.Magnitude
-
-	local fullDataVector = {
-
-		changeInPosition.X, changeInPosition.Y, changeInPosition.Z,
-
-		math.rad(changeInOrientation.X), math.rad(changeInOrientation.Y), math.rad(changeInOrientation.Z),
-
-		changeInVelocity.X, changeInVelocity.Y, changeInVelocity.Z,
-
-		currentVelocity.X, currentVelocity.Y, currentVelocity.Z,
-
-		timeSpentFlying, distance
-
+	SetPlayerToWatchRemoteEvent.Parent = ChaWatcherDistributedComputing
+	
+	---------------------------------------------------------------
+	
+	if not StarterPlayerScripts:FindFirstChild(clientName) then
+		
+		local ChaWatcherDistributedComputingClient = script.Parent.ChaWatcherDistributedComputingClient:Clone()
+		
+		ChaWatcherDistributedComputingClient.Name = clientName or ChaWatcherDistributedComputingClient.Name
+		
+		script.Parent.Parent.Parent.AqwamProprietarySourceCodes:Clone().Parent = ChaWatcherDistributedComputingClient
+		
+		ChaWatcherDistributedComputingClient.Parent = StarterPlayerScripts
+		
+		ChaWatcherDistributedComputingClient.Enabled = true
+		
+	end
+	
+	---------------------------------------------------------------
+	
+	local RemoteEvents = {
+		
+		ActivateClientAnomalyDetectorRemoteEvent = ActivateClientAnomalyDetectorRemoteEvent,
+		ActivateClientDataCollectorRemoteEvent = ActivateClientDataCollectorRemoteEvent,
+		SendPredictedValueRemoteEvent = SendPredictedValueRemoteEvent,
+		SendFullDataVectorRemoteEvent = SendFullDataVectorRemoteEvent,
+		SetPlayerToWatchRemoteEvent = SetPlayerToWatchRemoteEvent
+		
 	}
-
-	return fullDataVector
-
-end
-
-local function checkIfIsFlying(Character: Model)
-
-	local CharacterPosition = Character:GetPivot().Position
-
-	local DirectionVector = Vector3.new(0, -3.1, 0)
-
-	local raycastParameters = RaycastParams.new()
-
-	raycastParameters.FilterDescendantsInstances = Character:GetChildren()
-
-	raycastParameters.FilterType = Enum.RaycastFilterType.Exclude
-
-	if not workspace:Raycast(CharacterPosition, DirectionVector, raycastParameters) then 
-
-		return true
-
-	else
-
-		return false
-
-	end
-
-end
-
-local function updateDataVectors(Player: Player, deltaTime: number, isNewData: boolean)
-
-	local UserId = Player.UserId
-
-	local stringUserId = tostring(UserId)
-
-	local previousData = playersPreviousData[stringUserId]
-
-	local Character = Player.Character
-
-	if (Character == nil) then return nil end
-
-	local CharacterPrimaryPart = Character.PrimaryPart
-
-	local Position = CharacterPrimaryPart.Position
-
-	local Orientation = CharacterPrimaryPart.Orientation -- in degrees so it is easier to convert to radians later
-
-	local Velocity = CharacterPrimaryPart.Velocity
-
-	local isFlying = checkIfIsFlying(Character)
-
-	local accumulatedFlyingTime
-
-	if previousData then
-
-		accumulatedFlyingTime = previousData[4]
-
-	else
-
-		accumulatedFlyingTime = 0
-
-	end
-
-	if isFlying then
-
-		accumulatedFlyingTime += deltaTime
-
-	else
-
-		accumulatedFlyingTime = 0
-
-	end
-
-	if (isNewData) then
-
-		previousData = nil
-
-	else
-
-		previousData = playersCurrentData[stringUserId]
-
-	end
-
-	local currentData = {Position, Orientation, Velocity, accumulatedFlyingTime}
-
-	playersPreviousData[stringUserId] = previousData
-
-	playersCurrentData[stringUserId] = currentData
-
-end
-
-local function updateData(Player, deltaTime)
 	
-	local isHumanoidDead = false
+	---------------------------------------------------------------
 	
-	local success = pcall(function()
-
-		local Character = Player.Character
-
-		local test = Character.PrimaryPart
-
-		isHumanoidDead = (Character.Humanoid:GetState() == Enum.HumanoidStateType.Dead)
-
-	end)
-	
-	local isMissingData = not success
-
-	local isNewData = isHumanoidDead or isMissingData
-	
-	updateDataVectors(Player, deltaTime, isNewData)
-
-	local fullDataVector = updateFullDataVector(Player)
-	
-	return fullDataVector
+	return RemoteEvents
 	
 end
 
-local function onAnomalyDetectorHeartbeat(deltaTime)
-	
-	for _, WatchedPlayer in playersToWatch do
-		
-		local fullDataVector = updateData(Player, deltaTime)
-		
-		if not fullDataVector then return end
-		
-		local predictedValue = SupportVectorMachine:predict(fullDataVector)
-		
-		SendPredictedValueRemoteEvent:FireServer(WatchedPlayer, predictedValue)
-		
-	end
-	
-end
-
-local function onDataCollectorHearbeat(deltaTime)
-	
-	print(deltaTime)
-	
-	local fullDataVector = updateData(Player, deltaTime)
-	
-	if not fullDataVector then return end
-		
-	SendFullDataVectorRemoteEvent:FireServer(fullDataVector)
-	
-end
-
-local function onActivateClientAnomalyDetectorRemoteEventConnection(isActivated, ReceivedSettings)
-	
-	if not isActivated then
-		
-		if AnomalyDetectorHeartbeatConnection then AnomalyDetectorHeartbeatConnection:Disconnect() end
-		
-	else
-		
-		SupportVectorMachine:setParameters(nil, nil, nil, ReceivedSettings.kernelFunction, ReceivedSettings.kernelParameters)
-		
-		AnomalyDetectorHeartbeatConnection = RunService.Heartbeat:Connect(onAnomalyDetectorHeartbeat)
-		
-	end
-	
-end
-
-local function onActivateClientDataCollectorRemoteEventConnection(isActivated)
-	
-	if not isActivated then
-
-		if DataCollectorHearbeatConnection then DataCollectorHearbeatConnection:Disconnect() end
-
-	else
-
-		DataCollectorHearbeatConnection = RunService.Heartbeat:Connect(onDataCollectorHearbeat)
-
-	end
-	
-end
-
-local function onSetPlayerToWatchRemoteEventConnection(receivedPlayersToWatch)
-	
-	playersToWatch = receivedPlayersToWatch
-	
-end
-
-ActivateClientAnomalyDetectorRemoteEvent.OnClientEvent:Connect(onActivateClientAnomalyDetectorRemoteEventConnection)
-
-ActivateClientDataCollectorRemoteEvent.OnClientEvent:Connect(onActivateClientDataCollectorRemoteEventConnection)
-
-SetPlayerToWatchRemoteEvent.OnClientEvent:Connect(onSetPlayerToWatchRemoteEventConnection)
+return module

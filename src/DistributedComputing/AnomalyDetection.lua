@@ -83,6 +83,8 @@ function AnomalyDetector:onPlayerRemoving(Player: Player)
 		
 		local PlayerToSet = Players:GetPlayerByUserId(tonumber(watchedByPlayerStringUserId))
 		
+		if not PlayerToSet then continue end
+		
 		SetPlayerToWatchRemoteEvent:FireClient(PlayerToSet, self.PlayerWatching[watchedByPlayerStringUserId])
 
 	end

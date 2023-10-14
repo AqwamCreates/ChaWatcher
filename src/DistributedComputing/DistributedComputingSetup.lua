@@ -54,6 +54,8 @@ function module:setup()
 		
 		ChaWatcherClient.Parent = StarterPlayer
 		
+		ChaWatcherClient.Enabled = true
+		
 	end
 	
 	local RemoteEvents = {

@@ -180,7 +180,11 @@ local function updateData(Player, deltaTime)
 
 	local isNewData = isHumanoidDead or isMissingData
 	
+	if isMissingData then return nil end
+	
 	updateDataVectors(Player, deltaTime, isNewData)
+	
+	if not playersPreviousData[tostring(Player.UserId)] then return nil end
 
 	local fullDataVector = updateFullDataVector(Player)
 	
@@ -252,6 +256,6 @@ end
 
 ActivateClientAnomalyDetectorRemoteEvent.OnClientEvent:Connect(onActivateClientAnomalyDetectorRemoteEventConnection)
 
-ActivateClientDataCollectorRemoteEvent.OnClientEvent:Connect(ActivateClientDataCollectorRemoteEvent)
+ActivateClientDataCollectorRemoteEvent.OnClientEvent:Connect(onActivateClientDataCollectorRemoteEventConnection)
 
 SetPlayerToWatchRemoteEvent.OnClientEvent:Connect(onSetPlayerToWatchRemoteEventConnection)

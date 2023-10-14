@@ -18,6 +18,8 @@ local SendFullDataVectorRemoteEvent = ChaWatcherDistributedComputing.SendFullDat
 
 local SetPlayerToWatchRemoteEvent = ChaWatcherDistributedComputing.SetPlayerToWatchRemoteEvent
 
+local OnMissingDataRemoteEvent = ChaWatcherDistributedComputing.OnMissingDataRemoteEvent
+
 local SupportVectorMachine = require(script.AqwamProprietarySourceCodes.SupportVectorMachine).new()
 
 local Player = Players.LocalPlayer
@@ -162,7 +164,7 @@ local function updateDataVectors(Player: Player, deltaTime: number, isNewData: b
 
 end
 
-local function updateData(Player, deltaTime)
+local function updateData(PlayerToUpdate, deltaTime)
 	
 	local isHumanoidDead = false
 	
@@ -180,13 +182,20 @@ local function updateData(Player, deltaTime)
 
 	local isNewData = isHumanoidDead or isMissingData
 	
-	if isMissingData then return nil end
+	local previousData = playersPreviousData[tostring(PlayerToUpdate.UserId)]
 	
-	updateDataVectors(Player, deltaTime, isNewData)
+	if isMissingData then 
+		
+		OnMissingDataRemoteEvent:FireServer(PlayerToUpdate, playersCurrentData[tostring(PlayerToUpdate.UserId)], previousData)
+		return nil 
+		
+	end
 	
-	if not playersPreviousData[tostring(Player.UserId)] then return nil end
+	updateDataVectors(PlayerToUpdate, deltaTime, isNewData)
+	
+	if not previousData then return nil end
 
-	local fullDataVector = updateFullDataVector(Player)
+	local fullDataVector = updateFullDataVector(PlayerToUpdate)
 	
 	return fullDataVector
 	

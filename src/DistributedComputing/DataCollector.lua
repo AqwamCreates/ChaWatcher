@@ -90,7 +90,11 @@ function DataCollector:createConnectionsArray()
 		
 		if (typeof(WatchingPlayer) ~= "Player") or (typeof(watchedPlayerStringUserId) ~= "string") then return end
 		
-		local WatchedPlayer = Players:GetPlayerByUserId(tonumber(watchedPlayerStringUserId))
+		local userId = tonumber(watchedPlayerStringUserId)
+		
+		if not userId then return end
+		
+		local WatchedPlayer = Players:GetPlayerByUserId(userId)
 		
 		if not WatchedPlayer then return end
 		

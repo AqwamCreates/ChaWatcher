@@ -6,7 +6,7 @@ return {
 		
 		normalThreshold = 0.25,
 		
-		maxPredictedValuesDifferenceAverage = 5,
+		maxAveragePredictedValuesDifference = 5,
 		
 		kernelFunction = "radialBasisFunction",
 		

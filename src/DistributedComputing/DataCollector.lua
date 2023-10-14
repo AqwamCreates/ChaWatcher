@@ -4,9 +4,15 @@ local RunService = game:GetService("RunService")
 
 local DataCollectorDataStore = game:GetService("DataStoreService"):GetDataStore("AqwamChaWatcherDataCollectorDataStore")
 
-local SendFullDataVectorRemoteEvent: RemoteEvent
+local DistributedComputingSetup = require(script.Parent.DistributedComputingSetup)
 
-local ActivateClientDataCollectorRemoteEvent: RemoteEvent
+local clientName = DistributedComputingSetup:getClientName()
+
+local RemoteEvents = DistributedComputingSetup:setup()
+
+local ActivateClientDataCollectorRemoteEvent = RemoteEvents.ActivateClientDataCollectorRemoteEvent
+
+local SendFullDataVectorRemoteEvent = RemoteEvents.SendFullDataVectorRemoteEvent
 
 DataCollector = {}
 
@@ -60,13 +66,23 @@ end
 
 function DataCollector:createConnectionsArray()
 	
+	local PlayerAddedConnection = Players.PlayerAdded:Connect(function(Player)
+		
+		repeat
+			task.wait(0.1)
+		until Player:FindFirstChild(clientName)
+		
+		ActivateClientDataCollectorRemoteEvent:FireClient(Player, true)
+		
+	end)
+	
 	local SendFullDataVectorRemoteEventConnection = SendFullDataVectorRemoteEvent.OnServerEvent:Connect(function(_, fullDataVector)
 
 		self:addFullDataVector(fullDataVector)
 
 	end)
 	
-	return {SendFullDataVectorRemoteEventConnection}
+	return {PlayerAddedConnection, SendFullDataVectorRemoteEventConnection}
 	
 end
 
@@ -85,12 +101,6 @@ function DataCollector.new(dataStoreKey: string)
 	NewDataCollector.IsPlayerRecentlyJoined = {}
 
 	NewDataCollector.DataStoreKey = dataStoreKey
-	
-	local RemoteEvents = require(script.Parent.DistributedComputingSetup):setup()
-	
-	ActivateClientDataCollectorRemoteEvent = RemoteEvents.ActivateClientDataCollectorRemoteEvent
-	
-	SendFullDataVectorRemoteEvent = RemoteEvents.SendFullDataVectorRemoteEvent
 	
 	NewDataCollector.ConnectionsArray = {}
 	

@@ -175,12 +175,8 @@ end
 
 local function onDataCollectorHearbeat(deltaTime)
 	
-	for _, WatchedPlayer in playersToWatch do
-
 		
-		SendFullDataVectorRemoteEvent:FireServer(WatchingPlayer, WatchedPlayer, fullDataVector)
-
-	end
+	SendFullDataVectorRemoteEvent:FireServer(WatchingPlayer, WatchedPlayer, fullDataVector)
 	
 end
 

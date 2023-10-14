@@ -282,7 +282,7 @@ function AnomalyDetector.new(maxPlayersToWatchPerPlayer: number, normalThreshold
 
 	if (typeof(normalThreshold) ~= "number") then error("Normal threshold is not a number value!") end
 	
-	maxPredictedValuesDifferenceAverage = maxPredictedValuesDifferenceAverage or Settings["maxPredictedValuesDifferenceAverage"]
+	maxPredictedValuesDifferenceAverage = maxPredictedValuesDifferenceAverage or Settings["maxPredictedValuesDifferenceAverage"] or 5
 
 	if (typeof(maxPredictedValuesDifferenceAverage) ~= "number") then error("Maximum predicted values difference average is not a number value!") end
 	

@@ -1,4 +1,4 @@
-local StarterPlayer = game:GetService("StarterPlayer")
+local StarterPlayerScripts = game:GetService("StarterPlayer").StarterPlayerScripts
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -56,7 +56,7 @@ function module:setup()
 	
 	---------------------------------------------------------------
 	
-	if not StarterPlayer:FindFirstChild(clientName) then
+	if not StarterPlayerScripts:FindFirstChild(clientName) then
 		
 		local ChaWatcherDistributedComputingClient = script.Parent.ChaWatcherDistributedComputingClient:Clone()
 		
@@ -64,7 +64,7 @@ function module:setup()
 		
 		script.Parent.Parent.Parent.AqwamProprietarySourceCodes:Clone().Parent = ChaWatcherDistributedComputingClient
 		
-		ChaWatcherDistributedComputingClient.Parent = StarterPlayer.StarterPlayerScripts
+		ChaWatcherDistributedComputingClient.Parent = StarterPlayerScripts
 		
 		ChaWatcherDistributedComputingClient.Enabled = true
 		

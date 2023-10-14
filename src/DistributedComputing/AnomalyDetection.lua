@@ -136,6 +136,8 @@ end
 
 function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, WatchedPlayer: Player, predictedValue)
 	
+	if (WatchedPlayer == WatchingPlayer) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end 
+	
 	if ((typeof(WatchedPlayer) ~= "Player") or (typeof(predictedValue) ~= "number")) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end
 
 	local targetPlayerStringUserId = tostring(WatchedPlayer.UserId)

@@ -8,7 +8,7 @@ local MatrixL = require(ServerScriptService.MatrixL)
 
 local ChaWatcher = require(ServerScriptService.ChaWatcher)
 
-local DataCollector = ChaWatcher.Original.DataCollector.new()  -- Setting to defaults.
+local DataCollector = ChaWatcher.Original.DataCollector.new()  -- Setting to default.
 
 DataCollector:bindToHeartbeat(function(Player, fullDataVector) -- Runs a function on every heartbeat.
 

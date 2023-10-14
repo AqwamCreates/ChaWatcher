@@ -14,7 +14,7 @@ local AnomalyDetector = ChaWatcher.DistributedComputing.AnomalyDetector.new() --
 -- normalThreshold: If the predicted value is less than the normal threshold, then the player is considered not nornal.
 -- maxAveragePredictedValuesDifferemce: If the average predicted value difference is larger than this, suspect somebody has altered our data!
 
-AnomalyDetector:bindToOutlierFound(function(Player, predictedValue, fullDataVector) -- Runs a function if player's data is an outlier.
+AnomalyDetector:bindToOutlierFound(function(WatchingPlayer, WatchedPlayer, predictedValue, fullDataVector) -- Runs a function if player's data is an outlier.
 
 	print(Player.Name .. " has an outlier data!")
 

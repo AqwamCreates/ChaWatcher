@@ -33,6 +33,20 @@ local function iskeyExistsInTable(tableToSearch, keyToFind)
 	return false
 end
 
+local function convertStringUserIdToPlayer(stringUserId)
+	
+	local userId = tonumber(stringUserId)
+
+	if not userId then return nil end
+
+	local WatchedPlayer = Players:GetPlayerByUserId(userId)
+	
+	return WatchedPlayer
+	
+end
+	
+	
+	
 function AnomalyDetector:bindToMissingData(functionToRun)
 
 	self.OnMissingDataFunction = functionToRun
@@ -61,13 +75,19 @@ function AnomalyDetector:getStringUserIdsWithEmptyWatchSlots(stringUserIdExeptio
 	
 	local stringUserIdArray = {}
 	
-	for otherStringUserId, watchedPlayersTable in self.PlayerWatchList do
+	print(self.PlayerWatchListStringUserIds) -- Empty on second player!
+	
+	for otherStringUserId, watchedPlayersTable in self.PlayerWatchListStringUserIds do
+		
+		print(otherStringUserId)
 		
 		if (otherStringUserId == stringUserIdExeption) then continue end
 
 		local numberOfPlayersWatching = 0
 		
 		for _, _ in watchedPlayersTable do numberOfPlayersWatching += 1 end
+		
+		print(numberOfPlayersWatching)
 		
 		if (numberOfPlayersWatching >= self.MaxPlayersToWatchPerPlayer) then continue end
 		
@@ -87,7 +107,7 @@ function AnomalyDetector:onPlayerRemoving(Player: Player)
 
 	for watchedByPlayerStringUserId, _ in self.ReceivedPredictedValues[stringUserId] do
 
-		local playerWatchList = self.PlayerWatchList[watchedByPlayerStringUserId] 
+		local playerWatchList = self.PlayerWatchListStringUserIds[watchedByPlayerStringUserId] 
 
 		local index = table.find(playerWatchList, UserId)
 
@@ -97,13 +117,13 @@ function AnomalyDetector:onPlayerRemoving(Player: Player)
 		
 		if not PlayerToSet then continue end
 		
-		SetPlayerToWatchRemoteEvent:FireClient(PlayerToSet, self.PlayerWatchList[watchedByPlayerStringUserId])
+		SetPlayerToWatchRemoteEvent:FireClient(PlayerToSet, self.PlayerWatchListStringUserIds[watchedByPlayerStringUserId])
 
 	end
 
 	self.ReceivedPredictedValues[stringUserId] = nil
 	
-	self.PlayerWatchList[stringUserId] = nil
+	self.PlayerWatchListStringUserIds[stringUserId] = nil
 
 end
 
@@ -119,7 +139,9 @@ function AnomalyDetector:onPlayerAdded(Player: Player)
 	
 	local numberOfWatchedBy = 0
 	
-	while (numberOfWatchedBy < self.MaxPlayersToWatchPerPlayer) and (#otherStringUserIdArray >= 0) and (#Players:GetPlayers() > 1) do
+	print(otherStringUserIdArray)
+	
+	while (numberOfWatchedBy < self.MaxPlayersToWatchPerPlayer) and (#otherStringUserIdArray > 0) and (#Players:GetPlayers() > 1) do
 		
 		local randomIndex = Random.new():NextInteger(1, #otherStringUserIdArray)
 		
@@ -129,9 +151,9 @@ function AnomalyDetector:onPlayerAdded(Player: Player)
 		
 		if not PlayerToSet then continue end
 		
-		table.insert(self.PlayerWatchList[randomStringUserId], stringUserId)
+		table.insert(self.PlayerWatchListStringUserIds[randomStringUserId], stringUserId)
 		
-		SetPlayerToWatchRemoteEvent:FireClient(PlayerToSet, self.PlayerWatchList[randomStringUserId])
+		SetPlayerToWatchRemoteEvent:FireClient(PlayerToSet, self.PlayerWatchListStringUserIds[randomStringUserId])
 		
 		table.remove(otherStringUserIdArray, randomIndex)
 		
@@ -151,7 +173,7 @@ function AnomalyDetector:onPlayerAdded(Player: Player)
 		
 	end
 	
-	self.PlayerWatchList[stringUserId] = stringUserIdToWatchArray
+	self.PlayerWatchListStringUserIds[stringUserId] = stringUserIdToWatchArray
 	
 	self.ReceivedPredictedValues[stringUserId] = {}
 	
@@ -159,25 +181,25 @@ function AnomalyDetector:onPlayerAdded(Player: Player)
 	
 end
 
-function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, WatchedPlayer: Player, predictedValue: number)
+function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watchedPlayerStringUserId: number, predictedValue: number)
 	
 	local numberOfPlayersInServer = #Players:GetPlayers()
 	
-	if (WatchedPlayer == WatchingPlayer) and (numberOfPlayersInServer > 1) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer, WatchedPlayer, predictedValue) return end
-	
-	print(tostring(WatchedPlayer == WatchingPlayer))
-	
 	local watchingPlayerStringUserId = tostring(WatchingPlayer.UserId)
 	
-	local watchedPlayerStringUserId = tostring(WatchedPlayer.UserId)
+	local WatchedPlayer = convertStringUserIdToPlayer(watchedPlayerStringUserId)
 	
-	local isWatchingPlayerNotSupposedToWatchThisPlayer = not iskeyExistsInTable(self.PlayerWatchList[watchingPlayerStringUserId], watchedPlayerStringUserId)
+	if (watchingPlayerStringUserId == watchedPlayerStringUserId) and (numberOfPlayersInServer > 1) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer, WatchedPlayer, predictedValue) return end
 	
-	if (isWatchingPlayerNotSupposedToWatchThisPlayer) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer, WatchedPlayer, predictedValue) return end
+	print(WatchingPlayer.Name ..": " .. tostring(watchingPlayerStringUserId == watchedPlayerStringUserId))
 	
-	local isNotCorrectFormat = (typeof(WatchedPlayer) ~= "Player") or (typeof(predictedValue) ~= "number")
+	local isWatchingPlayerNotSupposedToWatchThisPlayer = not iskeyExistsInTable(self.PlayerWatchListStringUserIds[watchingPlayerStringUserId], watchedPlayerStringUserId)
+	
+	if (isWatchingPlayerNotSupposedToWatchThisPlayer) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end
+	
+	local isNotCorrectFormat = (typeof(watchedPlayerStringUserId) ~= "string") or (typeof(predictedValue) ~= "number")
 		
-	if (isNotCorrectFormat) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer, WatchedPlayer, predictedValue) return end
+	if (isNotCorrectFormat) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end
 
 	self.ReceivedPredictedValues[watchedPlayerStringUserId][watchingPlayerStringUserId] = predictedValue
 	
@@ -191,7 +213,7 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, Watche
 		
 		if (watchedByPlayerStringUserId == watchingPlayerStringUserId) and (numberOfPlayersInServer > 1) then continue end
 		
-		local PlayerToSet: Player = Players:GetPlayerByUserId(tonumber(watchedByPlayerStringUserId))
+		local PlayerToSet = convertStringUserIdToPlayer(watchedByPlayerStringUserId)
 
 		if not PlayerToSet then continue end
 		
@@ -221,7 +243,7 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, Watche
 		
 		for watchedByPlayerStringUserId, otherPredictedValue in watchedPlayerReceivedPredictedValues do
 			
-			local PlayerToSet = Players:GetPlayerByUserId(tonumber(watchedByPlayerStringUserId))
+			local PlayerToSet = convertStringUserIdToPlayer(watchedByPlayerStringUserId)
 				
 			if not PlayerToSet then continue end
 				
@@ -254,11 +276,11 @@ function AnomalyDetector:createConnectionsArray()
 
 	end)
 
-	local SendPredictedValueRemoteEventConnection = SendPredictedValueRemoteEvent.OnServerEvent:Connect(function(WatchingPlayer, WatchedPlayer, predictedValue)
+	local SendPredictedValueRemoteEventConnection = SendPredictedValueRemoteEvent.OnServerEvent:Connect(function(WatchingPlayer, watchedPlayerStringUserId, predictedValue)
 		
 		if not WatchingPlayer then return end
 
-		self:onPredictedValueReceived(WatchingPlayer, WatchedPlayer, predictedValue)
+		self:onPredictedValueReceived(WatchingPlayer, watchedPlayerStringUserId, predictedValue)
 
 	end)
 
@@ -274,9 +296,13 @@ function AnomalyDetector:createConnectionsArray()
 
 	end)
 	
-	local OnMissingDataRemoteEventConnection = OnMissingDataRemoteEvent.OnServerEvent:Connect(function(WatchingPlayer, WatchedPlayer, currentDataVector, previousDataVector)
+	local OnMissingDataRemoteEventConnection = OnMissingDataRemoteEvent.OnServerEvent:Connect(function(WatchingPlayer, watchedPlayerStringUserId, currentDataVector, previousDataVector)
 
-		if (typeof(WatchingPlayer) ~= "Player") or (typeof(WatchedPlayer) ~= "Player") then return end
+		if (typeof(WatchingPlayer) ~= "Player") or (typeof(watchedPlayerStringUserId) ~= "string") then return end
+
+		local WatchedPlayer = convertStringUserIdToPlayer(watchedPlayerStringUserId)
+
+		if not WatchedPlayer then return end
 
 		if self.OnMissingDataFunction then self.OnMissingDataFunction(WatchingPlayer, WatchedPlayer, currentDataVector, previousDataVector) end
 
@@ -334,7 +360,7 @@ function AnomalyDetector.new(maxPlayersToWatchPerPlayer: number, normalThreshold
 	
 	NewAnomalyDetector.MaxPlayersToWatchPerPlayer = maxPlayersToWatchPerPlayer
 	
-	NewAnomalyDetector.PlayerWatchList = {}
+	NewAnomalyDetector.PlayerWatchListStringUserIds = {}
 
 	NewAnomalyDetector.ConnectionsArray = {}
 	

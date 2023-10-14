@@ -133,8 +133,6 @@ function AnomalyDetector:onPlayerAdded(Player: Player)
 	
 	local numberOfWatchedBy = 0
 	
-	print(otherStringUserIdArray)
-	
 	while (numberOfWatchedBy < self.MaxPlayersToWatchPerPlayer) and (#otherStringUserIdArray > 0) and (#Players:GetPlayers() > 1) do
 		
 		local randomIndex = Random.new():NextInteger(1, #otherStringUserIdArray)

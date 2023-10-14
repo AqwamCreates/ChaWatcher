@@ -26,6 +26,16 @@ This license applies to the following named files located in the specified folde
   * OfflineData
   * OfflineModelSettings
 
+* Folder: ChaWatcher/SourceCodes/DistributedComputing
+
+  * ChaWatcherDistributedComputingClient
+  * DistributedComputingSetup
+  * AnomalyDetector
+  * DataCollector
+  * ModelCreator
+  * OfflineData
+  * OfflineModelSettings
+
 This license will not be granted to Roblox Corporation or any of its employees, regardless it is a derivative of the Library or not. A separate commercial agreement must 
 be made between Aqwam Harish Aiman and Roblox Corporation in order to use or possess the Library.
   	

@@ -18,6 +18,8 @@ function module:setup()
 
 	local SetPlayerToWatchRemoteEvent = ChaWatcherDistributedComputing:FindFirstChild("SetPlayerToWatchRemoteEvent") or Instance.new("RemoteEvent")
 	
+	---------------------------------------------------------------
+	
 	ChaWatcherDistributedComputing.Name = "ChaWatcherDistributedComputing"
 	
 	ActivateClientAnomalyDetectorRemoteEvent.Name = "ActivateClientAnomalyDetectorRemoteEvent"
@@ -29,6 +31,10 @@ function module:setup()
 	SendFullDataVectorRemoteEvent.Name = "SendFullDataVectorRemoteEvent"
 
 	SetPlayerToWatchRemoteEvent.Name = "SetPlayerToWatchRemoteEvent"
+	
+	---------------------------------------------------------------
+	
+	ChaWatcherDistributedComputing.Parent = ReplicatedStorage
 
 	ActivateClientAnomalyDetectorRemoteEvent.Parent = ChaWatcherDistributedComputing
 	
@@ -39,8 +45,6 @@ function module:setup()
 	SendFullDataVectorRemoteEvent.Parent = ChaWatcherDistributedComputing
 
 	SetPlayerToWatchRemoteEvent.Parent = ChaWatcherDistributedComputing
-
-	ChaWatcherDistributedComputing.Parent = ReplicatedStorage
 	
 	local ChaWatcherClient = StarterPlayer:FindFirstChild("ChaWatcherClient")
 	

@@ -88,6 +88,8 @@ function DataCollector:createConnectionsArray()
 	
 	local OnMissingDataRemoteEventConnection = OnMissingDataRemoteEvent.OnServerEvent:Connect(function(WatchingPlayer, WatchedPlayer, currentDataVector, previousDataVector)
 		
+		if (typeof(WatchingPlayer) ~= "Player") or (typeof(WatchedPlayer) ~= "Player") then return end
+		
 		if self.OnMissingDataFunction then self.OnMissingDataFunction(WatchingPlayer, WatchedPlayer, currentDataVector, previousDataVector) end
 		
 	end)

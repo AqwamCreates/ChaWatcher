@@ -10,19 +10,9 @@ local ChaWatcher = require(ServerScriptService.ChaWatcher)
 
 local DataCollector = ChaWatcher.Original.DataCollector.new(true, "1")
 
-DataCollector:bindToHeartbeat(function(Player, fullDataVector) -- Runs a function on every heartbeat.
-
-	print(Player.Name .. "\'s data has been collected!")
-
-	local distance = fullDataVector[14]
-
-end)
-
-DataCollector:bindToMissingData(function(Player) -- Runs a function if cannot create a data vector.
+DataCollector:bindToMissingData(function(Player, currentDataVector, previousDataVector) -- Runs a function if cannot create a data vector.
 
 	print(Player.Name .. " has missing data!")
-
-	local currentDataVector, previousDataVector = DataCollector:getPlayerDataVectors()
 
 end)
 

@@ -190,6 +190,8 @@ local function updateData(watchedPlayerStringUserId, deltaTime)
 	local success = pcall(function()
 
 		local WatchedPlayer = convertStringUserIdToPlayer(stringUserId)
+		
+		local Character = WatchedPlayer.Character
 
 		local test = Character.PrimaryPart
 
@@ -202,6 +204,8 @@ local function updateData(watchedPlayerStringUserId, deltaTime)
 	local isNewData = isHumanoidDead or isMissingData
 	
 	local previousData = playersPreviousData[watchedPlayerStringUserId]
+	
+
 	
 	if isMissingData then 
 		
@@ -225,7 +229,7 @@ local function sendPredictedValuesToServer(watchedPlayerStringUserId, deltaTime)
 	local fullDataVector = updateData(watchedPlayerStringUserId, deltaTime)
 
 	if not fullDataVector then return end
-
+	
 	local predictedValue = SupportVectorMachine:predict({fullDataVector}, true)[1][1]
 	
 	SendPredictedValueRemoteEvent:FireServer(watchedPlayerStringUserId, predictedValue)

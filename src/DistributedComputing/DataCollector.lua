@@ -58,6 +58,18 @@ function DataCollector:saveFullDataOnline()
 
 end
 
+function DataCollector:createConnectionsArray()
+	
+	local SendFullDataVectorRemoteEventConnection = SendFullDataVectorRemoteEvent.OnServerEvent:Connect(function(_, fullDataVector)
+
+		self:addFullDataVector(fullDataVector)
+
+	end)
+	
+	return {SendFullDataVectorRemoteEventConnection}
+	
+end
+
 function DataCollector.new(dataStoreKey: string)
 
 	local NewDataCollector = {}
@@ -80,17 +92,15 @@ function DataCollector.new(dataStoreKey: string)
 	
 	SendFullDataVectorRemoteEvent = RemoteEvents.SendFullDataVectorRemoteEvent
 	
-	SendFullDataVectorRemoteEvent.OnServerEvent:Connect(function(_, fullDataVector)
-		
-		NewDataCollector:addFullDataVector(fullDataVector)
-		
-	end)
-
+	NewDataCollector.ConnectionsArray = {}
+	
 	return NewDataCollector
 
 end
 
 function DataCollector:start()
+	
+	self.ConnectionsArray = self:createConnectionsArray()
 	
 	ActivateClientDataCollectorRemoteEvent:FireAllClients(true)
 	
@@ -99,6 +109,8 @@ end
 function DataCollector:stop()
 	
 	ActivateClientDataCollectorRemoteEvent:FireAllClients(false)
+	
+	for _, Connection in ipairs(self.ConnectionsArray) do Connection:Disconnect() end
 	
 end
 

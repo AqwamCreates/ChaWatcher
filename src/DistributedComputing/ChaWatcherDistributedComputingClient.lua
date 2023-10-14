@@ -18,11 +18,15 @@ local SetPlayerToWatchRemoteEvent = ChaWatcherDistributedComputing.SetPlayerToWa
 
 local SupportVectorMachine = require(script.AqwamProprietarySourceCodes.SupportVectorMachine).new()
 
-local PlayersPreviousData = {}
+local playersPreviousData = {}
 
-local PlayersCurrentData = {}
+local playersCurrentData = {}
 
-local PlayerToTrack = {}
+local playersToWatch = {}
+
+local AnomalyDetectorHeartbeatConnection
+
+local DataCollectorHearbeatConnection
 
 local function updateFullDataVector(Player)
 
@@ -30,9 +34,9 @@ local function updateFullDataVector(Player)
 
 	local stringUserId = tostring(UserId)
 
-	local previousDataVector = PlayersPreviousData[stringUserId] 
+	local previousDataVector = playersPreviousData[stringUserId] 
 
-	local currentDataVector = PlayersCurrentData[stringUserId] 
+	local currentDataVector = playersCurrentData[stringUserId] 
 
 	local changeInPosition = currentDataVector[1] - previousDataVector[1]
 
@@ -98,7 +102,7 @@ local function updateDataVectors(Player: Player, deltaTime: number, isNewData: b
 
 	local stringUserId = tostring(UserId)
 
-	local previousData = PlayersPreviousData[stringUserId]
+	local previousData = playersPreviousData[stringUserId]
 
 	local Character = Player.Character
 
@@ -136,28 +140,72 @@ local function updateDataVectors(Player: Player, deltaTime: number, isNewData: b
 
 	end
 
-	if (isNewData == true) then
+	if (isNewData) then
 
 		previousData = nil
 
 	else
 
-		previousData = PlayersCurrentData[stringUserId]
+		previousData = playersCurrentData[stringUserId]
 
 	end
 
 	local currentData = {Position, Orientation, Velocity, accumulatedFlyingTime}
 
-	PlayersPreviousData[stringUserId] = previousData
+	playersPreviousData[stringUserId] = previousData
 
-	PlayersCurrentData[stringUserId] = currentData
+	playersCurrentData[stringUserId] = currentData
 
 end
 
-local function onActivateClientAnomalyDetectorRemoteEventConnection(isActivated, ReceivedModel)
+local function onAnomalyDetectorHeartbeat(deltaTime)
 	
-	SupportVectorMachine:setParameters(nil, nil, nil, ReceivedModel.kernelFunction, ReceivedModel.kernelParameters)
+	
+end
+
+local function onDataCollectorHearbeat(deltaTime)
+	
+	
+end
+
+local function onActivateClientAnomalyDetectorRemoteEventConnection(isActivated, ReceivedSettings)
+	
+	if not isActivated then
+		
+		if AnomalyDetectorHeartbeatConnection then AnomalyDetectorHeartbeatConnection:Disconnect() end
+		
+	else
+		
+		SupportVectorMachine:setParameters(nil, nil, nil, ReceivedSettings.kernelFunction, ReceivedSettings.kernelParameters)
+		
+		AnomalyDetectorHeartbeatConnection = RunService.Heartbeat:Connect(onAnomalyDetectorHeartbeat)
+		
+	end
+	
+end
+
+local function onActivateClientDataCollectorRemoteEventConnection(isActivated)
+	
+	if not isActivated then
+
+		if DataCollectorHearbeatConnection then DataCollectorHearbeatConnection:Disconnect() end
+
+	else
+
+		DataCollectorHearbeatConnection = RunService.Heartbeat:Connect(onDataCollectorHearbeat)
+
+	end
+	
+end
+
+local function onSetPlayerToWatchRemoteEventConnection(receivedPlayersToWatch)
+	
+	playersToWatch = receivedPlayersToWatch
 	
 end
 
 ActivateClientAnomalyDetectorRemoteEvent.OnClientEvent:Connect(onActivateClientAnomalyDetectorRemoteEventConnection)
+
+ActivateClientDataCollectorRemoteEvent.OnClientEvent:Connect(ActivateClientDataCollectorRemoteEvent)
+
+SetPlayerToWatchRemoteEvent.OnClientEvent:Connect(onSetPlayerToWatchRemoteEventConnection)

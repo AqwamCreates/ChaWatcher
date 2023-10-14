@@ -68,10 +68,6 @@ function DataCollector:createConnectionsArray()
 	
 	local PlayerAddedConnection = Players.PlayerAdded:Connect(function(Player)
 		
-		repeat
-			task.wait(0.1)
-		until Player:FindFirstChild(clientName)
-		
 		ActivateClientDataCollectorRemoteEvent:FireClient(Player, true)
 		
 	end)

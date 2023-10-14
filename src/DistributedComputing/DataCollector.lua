@@ -2,10 +2,6 @@ local Players = game:GetService("Players")
 
 local RunService = game:GetService("RunService")
 
-local StarterPlayer = game:GetService("StarterPlayer")
-
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
 local DataCollectorDataStore = game:GetService("DataStoreService"):GetDataStore("AqwamChaWatcherDataCollectorDataStore")
 
 local SendFullDataVectorRemoteEvent: RemoteEvent

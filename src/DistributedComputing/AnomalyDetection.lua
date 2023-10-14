@@ -14,6 +14,17 @@ AnomalyDetector = {}
 
 AnomalyDetector.__index = AnomalyDetector
 
+local function iskeyExistsInTable(tableToSearch, keyToFind)
+	
+	for key, _ in pairs(tableToSearch) do
+		
+		if (key == keyToFind) then return true end
+		
+	end
+	
+	return false
+end
+
 function AnomalyDetector:bindToClientAccessedRemoteEvent(functionToRun)
 
 	self.OnClientAccessedFunction = functionToRun
@@ -137,6 +148,10 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, Watche
 	local watchingPlayerStringUserId = tostring(WatchingPlayer.UserId)
 	
 	local watchedPlayerStringUserId = tostring(WatchedPlayer.UserId)
+	
+	local isWatchingPlayerNotSupposedToWatchThisPlayer = not iskeyExistsInTable(self.WatchingPlayer[watchingPlayerStringUserId], watchedPlayerStringUserId)
+	
+	if (isWatchingPlayerNotSupposedToWatchThisPlayer) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end
 	
 	local isNotCorrectFormat = (typeof(WatchedPlayer) ~= "Player") or (typeof(predictedValue) ~= "number")
 		

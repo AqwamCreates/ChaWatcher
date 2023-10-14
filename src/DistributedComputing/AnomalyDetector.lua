@@ -39,9 +39,9 @@ local function convertStringUserIdToPlayer(stringUserId)
 
 	if not userId then return nil end
 
-	local WatchedPlayer = Players:GetPlayerByUserId(userId)
+	local Player = Players:GetPlayerByUserId(userId)
 	
-	return WatchedPlayer
+	return Player
 	
 end
 	

@@ -22,7 +22,7 @@ You can get the library from the Roblox's Marketplace [here](https://create.robl
 
 * [Anomaly Detection](ExampleCodes/AnomalyDetection.md)
 
-### Original Version
+### Distributed Computing Version
 
 * [Data Collection](ExampleCodes/DataCollection_DistributedComputing.md)
 

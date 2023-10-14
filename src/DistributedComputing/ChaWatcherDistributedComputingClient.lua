@@ -274,9 +274,20 @@ local function onActivateClientDataCollectorRemoteEventConnection(isActivated)
 	
 end
 
-local function onSetPlayerToWatchRemoteEventConnection(receivedPlayersToWatch)
+local function onSetPlayerToWatchRemoteEventConnection(receivedPlayersToWatchStringUserIds)
 	
-	playersToWatchStringUserIds = receivedPlayersToWatch
+	playersToWatchStringUserIds = receivedPlayersToWatchStringUserIds
+	
+	for watchedPlayerStringUserId, _ in playersCurrentData do
+		
+		local keyExists = iskeyExistsInTable(playersToWatchStringUserIds, watchedPlayerStringUserId)
+		
+		if keyExists then continue end
+		
+		playersPreviousData[watchedPlayerStringUserId] = nil
+		playersCurrentData[watchedPlayerStringUserId] = nil
+		
+	end
 	
 end
 

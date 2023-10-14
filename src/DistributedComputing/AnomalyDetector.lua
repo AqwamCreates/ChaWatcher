@@ -75,11 +75,7 @@ function AnomalyDetector:getStringUserIdsWithEmptyWatchSlots(stringUserIdExeptio
 	
 	local stringUserIdArray = {}
 	
-	print(self.PlayerWatchListStringUserIds) -- Empty on second player!
-	
 	for otherStringUserId, watchedPlayersTable in self.PlayerWatchListStringUserIds do
-		
-		print(otherStringUserId)
 		
 		if (otherStringUserId == stringUserIdExeption) then continue end
 
@@ -190,8 +186,6 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 	local WatchedPlayer = convertStringUserIdToPlayer(watchedPlayerStringUserId)
 	
 	if (watchingPlayerStringUserId == watchedPlayerStringUserId) and (numberOfPlayersInServer > 1) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer, WatchedPlayer, predictedValue) return end
-	
-	print(WatchingPlayer.Name ..": " .. tostring(watchingPlayerStringUserId == watchedPlayerStringUserId))
 	
 	local isWatchingPlayerNotSupposedToWatchThisPlayer = not iskeyExistsInTable(self.PlayerWatchListStringUserIds[watchingPlayerStringUserId], watchedPlayerStringUserId)
 	

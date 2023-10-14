@@ -37,7 +37,7 @@ end)
 
 AnomalyDetector:bindToClientAccessedRemoteEvent(function(Player) -- Runs a function if cannot create a data vector.
 
-	print(Player.Name .. " tried to change the data!")
+	print(Player.Name .. " tried to change access remote events!")
 
 end)
 

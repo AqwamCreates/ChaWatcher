@@ -171,31 +171,43 @@ end
 
 function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watchedPlayerStringUserId: number, predictedValue: number, fullDataVector)
 	
+	-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
 	local watchingPlayerStringUserId = tostring(WatchingPlayer.UserId)
 	
 	self.TimeSinceLastUpdate[watchingPlayerStringUserId] = os.time()
 	
 	if self.isWatchListCurrentlyReassigned then return end
 	
-	local numberOfPlayersInServer = #Players:GetPlayers()
-	
-	local WatchedPlayer = convertStringUserIdToPlayer(watchedPlayerStringUserId)
-	
-	if self.PredictedValueReceivedFunction then self.PredictedValueReceivedFunction(WatchingPlayer, WatchedPlayer, predictedValue, fullDataVector) end
+	-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	local isNotCorrectFormat = (typeof(watchedPlayerStringUserId) ~= "string") or (typeof(predictedValue) ~= "number")
 
 	if (isNotCorrectFormat) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end
 	
-	if (watchingPlayerStringUserId == watchedPlayerStringUserId) and (numberOfPlayersInServer > 1) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end
+	-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	local WatchedPlayer = convertStringUserIdToPlayer(watchedPlayerStringUserId)
+	
+	if self.PredictedValueReceivedFunction then self.PredictedValueReceivedFunction(WatchingPlayer, WatchedPlayer, predictedValue, fullDataVector) end
+	
+	-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	if (watchingPlayerStringUserId == watchedPlayerStringUserId) and (#Players:GetPlayers() > 1) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end
+	
+	-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	local isWatchingPlayerNotSupposedToWatchThisPlayer = not iskeyExistsInTable(self.PlayerWatchListStringUserIds[watchingPlayerStringUserId], watchedPlayerStringUserId)
 	
 	if (isWatchingPlayerNotSupposedToWatchThisPlayer) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end
 	
+	-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
 	local watchedPlayerReceivedPredictedValues = self.ReceivedPredictedValues[watchedPlayerStringUserId]
 	
 	if not watchedPlayerReceivedPredictedValues then return end
+	
+	-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	watchedPlayerReceivedPredictedValues[watchingPlayerStringUserId] = predictedValue
 	

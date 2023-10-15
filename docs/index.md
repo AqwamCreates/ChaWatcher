@@ -48,7 +48,7 @@ You can get the library from the Roblox's Marketplace [here](https://create.robl
 
 ## Tips:
 
-* Use "radialBasisFunction" as your first choice of kernel function for training models. If the accuracy is weak, then use other kernel functions.
+* Use "radialBasisFunction" as your first choice of kernel function for training models. If the accuracy is weak, then "sigmoid". Use "linear" and "polynomial" as a last resort or when you have domain or machine learning knowledge!
 
 * Set the c value to very small if you want majority of your data points be a "normal" data.
 

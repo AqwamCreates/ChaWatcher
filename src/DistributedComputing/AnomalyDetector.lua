@@ -185,7 +185,12 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 	
 	local isNotCorrectFormat = (typeof(watchedPlayerStringUserId) ~= "string") or (typeof(predictedValue) ~= "number")
 
-	if (isNotCorrectFormat) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end
+	if (isNotCorrectFormat) then 
+
+		if self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) end
+		return
+
+	end
 	
 	-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
@@ -197,7 +202,7 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 	
 	local serverHasMoreThanOnePlayer = (#Players:GetPlayers() > 1)
 	
-	if (watchingPlayerStringUserId == watchedPlayerStringUserId) and serverHasMoreThanOnePlayer then 
+	if (watchingPlayerStringUserId == watchedPlayerStringUserId) and (serverHasMoreThanOnePlayer) then 
 		
 		if self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) end
 		return
@@ -208,7 +213,7 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 	
 	local isWatchingPlayerNotSupposedToWatchThisPlayer = not iskeyExistsInTable(self.PlayerWatchListStringUserIds[watchingPlayerStringUserId], watchedPlayerStringUserId)
 	
-	if (isWatchingPlayerNotSupposedToWatchThisPlayer) and (serverHasMoreThanOnePlayer) and self.OnClientAccessedFunction then 
+	if (isWatchingPlayerNotSupposedToWatchThisPlayer) and (serverHasMoreThanOnePlayer) then 
 
 		if self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) end
 		return
@@ -222,7 +227,7 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 	if not watchedPlayerReceivedPredictedValues then return end
 	
 	-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+	
 	watchedPlayerReceivedPredictedValues[watchingPlayerStringUserId] = predictedValue
 	
 	local averageDifference = 0

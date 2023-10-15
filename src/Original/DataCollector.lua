@@ -90,7 +90,7 @@ function DataCollector:updateDataVectors(Player: Player, deltaTime: number, isNe
 
 	local CharacterPrimaryPart = Character.PrimaryPart
 	
-	local CHaracterCFrame = Character:GetPivot()
+	local CHaracterCFrame = Character:GetPivot() -- Since hackers can fake a HumanoidRootPart and control its properties, we'll be relying on both combination of primary part and model position for best results.
 
 	local Position = CHaracterCFrame.Position
 
@@ -162,7 +162,9 @@ function DataCollector:onHeartbeatForPlayer(Player, deltaTime)
 
 		local Character = Player.Character
 
-		local test = Character.PrimaryPart
+		local PrimaryPart = Character.PrimaryPart
+
+		local Velocity = PrimaryPart.Velocity
 
 		isHumanoidDead = (Character.Humanoid:GetState() == Enum.HumanoidStateType.Dead)
 

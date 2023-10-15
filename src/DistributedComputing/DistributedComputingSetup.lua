@@ -62,9 +62,11 @@ function module:setup()
 	
 	---------------------------------------------------------------
 	
-	if not StarterPlayerScripts:FindFirstChild(clientName) then
+	local ChaWatcherDistributedComputingClient = StarterPlayerScripts:FindFirstChild(clientName)
+	
+	if not ChaWatcherDistributedComputingClient then
 		
-		local ChaWatcherDistributedComputingClient = script.Parent.ChaWatcherDistributedComputingClient:Clone()
+		ChaWatcherDistributedComputingClient = script.Parent.ChaWatcherDistributedComputingClient:Clone()
 		
 		ChaWatcherDistributedComputingClient.Name = clientName or ChaWatcherDistributedComputingClient.Name
 		
@@ -91,7 +93,7 @@ function module:setup()
 	
 	---------------------------------------------------------------
 	
-	return RemoteEvents
+	return RemoteEvents, ChaWatcherDistributedComputingClient
 	
 end
 

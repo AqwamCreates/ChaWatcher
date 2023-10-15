@@ -177,6 +177,8 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 	
 	self.TimeSinceLastUpdate[watchingPlayerStringUserId] = os.time()
 	
+	-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
 	if self.isWatchListCurrentlyReassigned then return end
 	
 	-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -237,9 +239,13 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 
 	end
 	
+	-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
 	local numberOfWatchingPlayers = #watchedByPlayerArray
 	
 	if (numberOfWatchingPlayers > 1) then averageDifference /= (numberOfWatchingPlayers - 1) end
+	
+	-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	if (averageDifference > self.MaxAveragePredictedValuesDifference) then
 		

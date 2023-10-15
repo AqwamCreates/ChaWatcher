@@ -8,7 +8,7 @@ local DistributedComputingSetup = require(script.Parent.DistributedComputingSetu
 
 local clientName = DistributedComputingSetup:getClientName()
 
-local RemoteEvents = DistributedComputingSetup:setup()
+local RemoteEvents, ChaWatcherDistributedComputingClient = DistributedComputingSetup:setup()
 
 local ActivateClientAnomalyDetectorRemoteEvent = RemoteEvents.ActivateClientAnomalyDetectorRemoteEvent
 
@@ -147,9 +147,11 @@ function AnomalyDetector:reassignWatchListForAllPlayersRandomly()
 	
 end
 
-function AnomalyDetector:onPlayerRemoving()
+function AnomalyDetector:onPlayerRemoving(Player)
 	
 	self:reassignWatchListForAllPlayersRandomly()
+	
+	self.TimeSinceLastUpdate[tostring(Player.UserId)] = nil
 
 end
 
@@ -163,15 +165,19 @@ function AnomalyDetector:onPlayerAdded(Player: Player)
 	
 	SetPlayerToWatchRemoteEvent:FireClient(Player, self.PlayerWatchListStringUserIds[stringUserId])
 	
+	self.TimeSinceLastUpdate[stringUserId] = os.time()
+	
 end
 
 function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watchedPlayerStringUserId: number, predictedValue: number, fullDataVector)
 	
+	local watchingPlayerStringUserId = tostring(WatchingPlayer.UserId)
+	
+	self.TimeSinceLastUpdate[watchingPlayerStringUserId] = os.time()
+	
 	if self.isWatchListCurrentlyReassigned then return end
 	
 	local numberOfPlayersInServer = #Players:GetPlayers()
-	
-	local watchingPlayerStringUserId = tostring(WatchingPlayer.UserId)
 	
 	local WatchedPlayer = convertStringUserIdToPlayer(watchedPlayerStringUserId)
 	
@@ -235,6 +241,32 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 	
 end
 
+function AnomalyDetector:checkForLastUpdate(Player: Player, currentTime: number)
+	
+	if not Player then return end
+	
+	local playerStringUserId = tostring(Player.UserId)
+	
+	local lastUpdatedTime = self.TimeSinceLastUpdate[playerStringUserId] or os.time()
+
+	local timeDifference = currentTime - lastUpdatedTime
+	
+	if timeDifference <= 10 then return end
+	
+	local clientScript = Player.PlayerScripts:FindFirstChild(clientName)
+	
+	if clientScript and self.OnClientAccessedFunction then self.OnClientAccessedFunction(Player) end
+		
+	ChaWatcherDistributedComputingClient:Clone().Parent = Player.PlayerGui 
+	
+	task.delay(1, function()
+		
+		SetPlayerToWatchRemoteEvent:FireClient(Player, self.PlayerWatchListStringUserIds[playerStringUserId])
+		
+	end)
+	
+end
+
 function AnomalyDetector:createConnectionsArray()
 
 	local PlayerAddedConnection = Players.PlayerAdded:Connect(function(Player)
@@ -280,8 +312,29 @@ function AnomalyDetector:createConnectionsArray()
 		if self.OnMissingDataFunction then self.OnMissingDataFunction(WatchingPlayer, WatchedPlayer, currentDataVector, previousDataVector) end
 
 	end)
+	
+	local HeartbeatConnection = RunService.Heartbeat:Connect(function(deltaTime)
+		
+		local currentTime = os.time()
+		
+		for _, Player in Players:GetPlayers() do	
+			
+			self:checkForLastUpdate(Player, currentTime)
+			
+		end
+		
+	end)
+	
+	local ConnectionsArray = {
+		
+		PlayerAddedConnection, PlayerRemovingConnection, 
+		SendPredictedValueRemoteEventConnection, SetPlayerToWatchRemoteEventConnection, 
+		ActivateClientAnomalyDetectorRemoteEventConnection, OnMissingDataRemoteEventConnection,
+		HeartbeatConnection
+		
+	}
 
-	return {PlayerAddedConnection, PlayerRemovingConnection, SendPredictedValueRemoteEventConnection, SetPlayerToWatchRemoteEventConnection, ActivateClientAnomalyDetectorRemoteEventConnection, OnMissingDataRemoteEventConnection}
+	return ConnectionsArray
 
 end
 
@@ -338,6 +391,8 @@ function AnomalyDetector.new(maxPlayersToWatchPerPlayer: number, normalThreshold
 	NewAnomalyDetector.ConnectionsArray = {}
 	
 	NewAnomalyDetector.ReceivedPredictedValues = {}
+	
+	NewAnomalyDetector.TimeSinceLastUpdate = {}
 	
 	NewAnomalyDetector.isWatchListCurrentlyReassigned = false
 

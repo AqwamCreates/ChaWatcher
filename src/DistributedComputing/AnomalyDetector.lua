@@ -321,7 +321,11 @@ function AnomalyDetector:createConnectionsArray()
 		
 		for _, Player in Players:GetPlayers() do	
 			
-			self:checkForLastUpdate(Player, currentTime)
+			pcall(function()
+				
+				self:checkForLastUpdate(Player, currentTime)
+				
+			end)
 			
 		end
 		

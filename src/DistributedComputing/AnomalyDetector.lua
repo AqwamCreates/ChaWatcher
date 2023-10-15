@@ -259,6 +259,8 @@ function AnomalyDetector:checkForLastUpdate(Player: Player, currentTime: number)
 		
 	ChaWatcherDistributedComputingClient:Clone().Parent = Player.PlayerGui 
 	
+	self.TimeSinceLastUpdate[playerStringUserId] = os.time()
+	
 	task.delay(1, function()
 		
 		SetPlayerToWatchRemoteEvent:FireClient(Player, self.PlayerWatchListStringUserIds[playerStringUserId])

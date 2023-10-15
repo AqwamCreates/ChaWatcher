@@ -12,6 +12,8 @@ If there are any issues for this library, don’t be afraid to reach out to me a
 
 You can get the library from the Roblox's Marketplace [here](https://create.roblox.com/marketplace/asset/15042133614/ChaWatcher)!
 
+Please report any bugs [here](https://github.com/AqwamCreates/ChaWatcher/issues)!
+
 ## Example codes (with explanations):
 
 ### Original Version

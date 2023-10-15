@@ -1,100 +1,316 @@
+local Players = game:GetService("Players")
+
+local RunService = game:GetService("RunService")
+
+local StarterPlayer = game:GetService("StarterPlayer")
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local StarterPlayerScripts = game:GetService("StarterPlayer").StarterPlayerScripts
+local ChaWatcherDistributedComputing = ReplicatedStorage:WaitForChild("ChaWatcherDistributedComputing")
 
-local clientName = "ChaWatcherDistributedComputingClient"
+local ActivateClientAnomalyDetectorRemoteEvent =  ChaWatcherDistributedComputing.ActivateClientAnomalyDetectorRemoteEvent
 
-local module = {}
+local ActivateClientDataCollectorRemoteEvent = ChaWatcherDistributedComputing.ActivateClientDataCollectorRemoteEvent
 
-function module:getClientName()
-	
-	return clientName
-	
+local SendPredictedValueRemoteEvent = ChaWatcherDistributedComputing.SendPredictedValueRemoteEvent
+
+local SendFullDataVectorRemoteEvent = ChaWatcherDistributedComputing.SendFullDataVectorRemoteEvent
+
+local SetPlayerToWatchRemoteEvent = ChaWatcherDistributedComputing.SetPlayerToWatchRemoteEvent
+
+local OnMissingDataRemoteEvent = ChaWatcherDistributedComputing.OnMissingDataRemoteEvent
+
+local SupportVectorMachine = require(script.AqwamProprietarySourceCodes.SupportVectorMachine).new()
+
+local Player = Players.LocalPlayer
+
+local stringUserId = tostring(Player.UserId)
+
+local Character = Player.Character
+
+local playersToWatchStringUserIds = {}
+
+local playersPreviousData = {}
+
+local playersCurrentData = {}
+
+local AnomalyDetectorHeartbeatConnection
+
+local DataCollectorHearbeatConnection
+
+local function iskeyExistsInTable(tableToSearch, keyToFind)
+
+	for key, _ in pairs(tableToSearch) do
+
+		if (key == keyToFind) then return true end
+
+	end
+
+	return false
 end
 
-function module:setup()
-	
-	local ChaWatcherDistributedComputing = ReplicatedStorage:FindFirstChild("ChaWatcherDistributedComputing") or Instance.new("Folder")
-	
-	local ActivateClientAnomalyDetectorRemoteEvent =  ChaWatcherDistributedComputing:FindFirstChild("ActivateClientAnomalyDetectorRemoteEvent") or Instance.new("RemoteEvent")
-	
-	local ActivateClientDataCollectorRemoteEvent = ChaWatcherDistributedComputing:FindFirstChild("ActivateClientDataCollectorRemoteEvent") or Instance.new("RemoteEvent")
+local function convertStringUserIdToPlayer(stringUserId)
 
-	local SendPredictedValueRemoteEvent = ChaWatcherDistributedComputing:FindFirstChild("SendPredictedValueRemoteEvent") or Instance.new("RemoteEvent")
-	
-	local SendFullDataVectorRemoteEvent = ChaWatcherDistributedComputing:FindFirstChild("SendFullDataVectorRemoteEvent") or Instance.new("RemoteEvent")
+	local userId = tonumber(stringUserId)
 
-	local SetPlayerToWatchRemoteEvent = ChaWatcherDistributedComputing:FindFirstChild("SetPlayerToWatchRemoteEvent") or Instance.new("RemoteEvent")
-	
-	local OnMissingDataRemoteEvent = ChaWatcherDistributedComputing:FindFirstChild("OnMissingDataRemoteEvent") or Instance.new("RemoteEvent")
-	
-	---------------------------------------------------------------
-	
-	ChaWatcherDistributedComputing.Name = "ChaWatcherDistributedComputing"
-	
-	ActivateClientAnomalyDetectorRemoteEvent.Name = "ActivateClientAnomalyDetectorRemoteEvent"
-	
-	ActivateClientDataCollectorRemoteEvent.Name = "ActivateClientDataCollectorRemoteEvent"
+	if not userId then return nil end
 
-	SendPredictedValueRemoteEvent.Name = "SendPredictedValueRemoteEvent"
-	
-	SendFullDataVectorRemoteEvent.Name = "SendFullDataVectorRemoteEvent"
+	local WatchedPlayer = Players:GetPlayerByUserId(userId)
 
-	SetPlayerToWatchRemoteEvent.Name = "SetPlayerToWatchRemoteEvent"
-	
-	OnMissingDataRemoteEvent.Name = "OnMissingDataRemoteEvent"
-	
-	---------------------------------------------------------------
-	
-	ChaWatcherDistributedComputing.Parent = ReplicatedStorage
+	return WatchedPlayer
 
-	ActivateClientAnomalyDetectorRemoteEvent.Parent = ChaWatcherDistributedComputing
-	
-	ActivateClientDataCollectorRemoteEvent.Parent = ChaWatcherDistributedComputing
+end
 
-	SendPredictedValueRemoteEvent.Parent = ChaWatcherDistributedComputing
-	
-	SendFullDataVectorRemoteEvent.Parent = ChaWatcherDistributedComputing
+local function updateFullDataVector(watchedPlayerStringUserId)
 
-	SetPlayerToWatchRemoteEvent.Parent = ChaWatcherDistributedComputing
+	local previousDataVector = playersPreviousData[watchedPlayerStringUserId] 
+
+	local currentDataVector = playersCurrentData[watchedPlayerStringUserId] 
+
+	local changeInPosition = currentDataVector[1] - previousDataVector[1]
+
+	local changeInOrientation = currentDataVector[2] - previousDataVector[2]
+
+	local currentVelocity = currentDataVector[3] 
+
+	local previousVelocity = previousDataVector[3]
+
+	local changeInVelocity = currentVelocity - previousVelocity
+
+	local timeSpentFlying = currentDataVector[4]
+
+	local distance = changeInPosition.Magnitude
+
+	local fullDataVector = {
+
+		changeInPosition.X, changeInPosition.Y, changeInPosition.Z,
+
+		math.rad(changeInOrientation.X), math.rad(changeInOrientation.Y), math.rad(changeInOrientation.Z),
+
+		changeInVelocity.X, changeInVelocity.Y, changeInVelocity.Z,
+
+		currentVelocity.X, currentVelocity.Y, currentVelocity.Z,
+
+		timeSpentFlying, distance
+
+	}
+
+	return fullDataVector
+
+end
+
+local function checkIfIsFlying(Character: Model)
+
+	local CharacterPosition = Character:GetPivot().Position
+
+	local DirectionVector = Vector3.new(0, -3.1, 0)
+
+	local raycastParameters = RaycastParams.new()
+
+	raycastParameters.FilterDescendantsInstances = Character:GetChildren()
+
+	raycastParameters.FilterType = Enum.RaycastFilterType.Exclude
+
+	if not workspace:Raycast(CharacterPosition, DirectionVector, raycastParameters) then 
+
+		return true
+
+	else
+
+		return false
+
+	end
+
+end
+
+local function updateDataVectors(watchedPlayerStringUserId, deltaTime: number, isNewData: boolean)
+
+	local previousData = playersPreviousData[watchedPlayerStringUserId]
 	
-	OnMissingDataRemoteEvent.Parent = ChaWatcherDistributedComputing
+	local WatchedPlayer = convertStringUserIdToPlayer(stringUserId)
+
+	local Character = WatchedPlayer.Character
+
+	if (Character == nil) then return nil end
+
+	local CharacterPrimaryPart = Character.PrimaryPart
+
+	local CHaracterCFrame = Character:GetPivot() -- Since hackers can fake a HumanoidRootPart and control its properties, we'll be relying on both combination of primary part and model position for best results.
+
+	local Position = CHaracterCFrame.Position
+
+	local Orientation = Vector3.new(math.deg(CHaracterCFrame.LookVector.X), math.deg(CHaracterCFrame.LookVector.Y), math.deg(CHaracterCFrame.LookVector.Z)) -- in degrees so it is easier to convert to radians later
+
+	local Velocity = CharacterPrimaryPart.Velocity
+
+	local isFlying = checkIfIsFlying(Character)
+
+	local accumulatedFlyingTime
+
+	if previousData then
+
+		accumulatedFlyingTime = previousData[4]
+
+	else
+
+		accumulatedFlyingTime = 0
+
+	end
+
+	if isFlying then
+
+		accumulatedFlyingTime += deltaTime
+
+	else
+
+		accumulatedFlyingTime = 0
+
+	end
+
+	if (isNewData) then
+
+		previousData = nil
+
+	else
+
+		previousData = playersCurrentData[watchedPlayerStringUserId]
+
+	end
+
+	local currentData = {Position, Orientation, Velocity, accumulatedFlyingTime}
+
+	playersPreviousData[watchedPlayerStringUserId] = previousData
+
+	playersCurrentData[watchedPlayerStringUserId] = currentData
+
+end
+
+local function updateData(watchedPlayerStringUserId, deltaTime)
 	
-	---------------------------------------------------------------
+	local isHumanoidDead = false
 	
-	local ChaWatcherDistributedComputingClient = StarterPlayerScripts:FindFirstChild(clientName)
-	
-	if not ChaWatcherDistributedComputingClient then
+	local success = pcall(function()
+
+		local WatchedPlayer = convertStringUserIdToPlayer(stringUserId)
 		
-		ChaWatcherDistributedComputingClient = script.Parent.ChaWatcherDistributedComputingClient:Clone()
+		local Character = WatchedPlayer.Character
+
+		local test = Character.PrimaryPart
+
+		isHumanoidDead = (Character.Humanoid:GetState() == Enum.HumanoidStateType.Dead)
+
+	end)
+	
+	local isMissingData = not success
+
+	local isNewData = isHumanoidDead or isMissingData
+	
+	local previousData = playersPreviousData[watchedPlayerStringUserId]
+	
+	if isMissingData then 
 		
-		ChaWatcherDistributedComputingClient.Name = clientName or ChaWatcherDistributedComputingClient.Name
-		
-		script.Parent.Parent.Parent.AqwamProprietarySourceCodes:Clone().Parent = ChaWatcherDistributedComputingClient
-		
-		ChaWatcherDistributedComputingClient.Parent = StarterPlayerScripts
-		
-		ChaWatcherDistributedComputingClient.Enabled = true
+		OnMissingDataRemoteEvent:FireServer(watchedPlayerStringUserId, playersCurrentData[watchedPlayerStringUserId], previousData)
+		return nil 
 		
 	end
 	
-	---------------------------------------------------------------
+	updateDataVectors(watchedPlayerStringUserId, deltaTime, isNewData)
 	
-	local RemoteEvents = {
-		
-		ActivateClientAnomalyDetectorRemoteEvent = ActivateClientAnomalyDetectorRemoteEvent,
-		ActivateClientDataCollectorRemoteEvent = ActivateClientDataCollectorRemoteEvent,
-		SendPredictedValueRemoteEvent = SendPredictedValueRemoteEvent,
-		SendFullDataVectorRemoteEvent = SendFullDataVectorRemoteEvent,
-		SetPlayerToWatchRemoteEvent = SetPlayerToWatchRemoteEvent,
-		OnMissingDataRemoteEvent = OnMissingDataRemoteEvent,
-		
-	}
+	if not previousData then return nil end
+
+	local fullDataVector = updateFullDataVector(watchedPlayerStringUserId)
 	
-	---------------------------------------------------------------
-	
-	return RemoteEvents, ChaWatcherDistributedComputingClient
+	return fullDataVector
 	
 end
 
-return module
+local function sendPredictedValuesToServer(watchedPlayerStringUserId, deltaTime)
+	
+	local fullDataVector = updateData(watchedPlayerStringUserId, deltaTime)
+
+	if not fullDataVector then return end
+	
+	local predictedValue = SupportVectorMachine:predict({fullDataVector}, true)[1][1]
+	
+	SendPredictedValueRemoteEvent:FireServer(watchedPlayerStringUserId, predictedValue, fullDataVector)
+	
+end
+
+local function onAnomalyDetectorHeartbeat(deltaTime)
+	
+	if (#Players:GetPlayers() == 1) then
+		
+		sendPredictedValuesToServer(stringUserId, deltaTime)
+		
+	else
+		
+		for _, watchedPlayerStringUserId in playersToWatchStringUserIds do sendPredictedValuesToServer(watchedPlayerStringUserId, deltaTime) end
+		
+	end
+	
+end
+
+local function onDataCollectorHearbeat(deltaTime)
+	
+	local fullDataVector = updateData(Player, deltaTime)
+	
+	if not fullDataVector then return end
+		
+	SendFullDataVectorRemoteEvent:FireServer(fullDataVector)
+	
+end
+
+local function onActivateClientAnomalyDetectorRemoteEventConnection(isActivated, ReceivedSettings)
+	
+	if not isActivated then
+		
+		if AnomalyDetectorHeartbeatConnection then AnomalyDetectorHeartbeatConnection:Disconnect() end
+		
+	else
+		
+		SupportVectorMachine:setParameters(nil, nil, nil, ReceivedSettings.kernelFunction, ReceivedSettings.kernelParameters)
+		
+		SupportVectorMachine:setModelParameters(ReceivedSettings.ModelParameters)
+		
+		AnomalyDetectorHeartbeatConnection = RunService.Heartbeat:Connect(onAnomalyDetectorHeartbeat)
+		
+	end
+	
+end
+
+local function onActivateClientDataCollectorRemoteEventConnection(isActivated)
+	
+	if not isActivated then
+
+		if DataCollectorHearbeatConnection then DataCollectorHearbeatConnection:Disconnect() end
+
+	else
+
+		DataCollectorHearbeatConnection = RunService.Heartbeat:Connect(onDataCollectorHearbeat)
+
+	end
+	
+end
+
+local function onSetPlayerToWatchRemoteEventConnection(receivedPlayersToWatchStringUserIds)
+	
+	playersToWatchStringUserIds = receivedPlayersToWatchStringUserIds
+	
+	for watchedPlayerStringUserId, _ in playersCurrentData do
+		
+		local keyExists = iskeyExistsInTable(playersToWatchStringUserIds, watchedPlayerStringUserId)
+		
+		if keyExists then continue end
+		
+		playersPreviousData[watchedPlayerStringUserId] = nil
+		playersCurrentData[watchedPlayerStringUserId] = nil
+		
+	end
+	
+end
+
+ActivateClientAnomalyDetectorRemoteEvent.OnClientEvent:Connect(onActivateClientAnomalyDetectorRemoteEventConnection)
+
+ActivateClientDataCollectorRemoteEvent.OnClientEvent:Connect(onActivateClientDataCollectorRemoteEventConnection)
+
+SetPlayerToWatchRemoteEvent.OnClientEvent:Connect(onSetPlayerToWatchRemoteEventConnection)

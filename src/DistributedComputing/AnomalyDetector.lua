@@ -195,13 +195,25 @@ function AnomalyDetector:onPredictedValueReceived(WatchingPlayer: Player, watche
 	
 	-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
-	if (watchingPlayerStringUserId == watchedPlayerStringUserId) and (#Players:GetPlayers() > 1) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end
+	local serverHasMoreThanOnePlayer = (#Players:GetPlayers() > 1)
+	
+	if (watchingPlayerStringUserId == watchedPlayerStringUserId) and serverHasMoreThanOnePlayer then 
+		
+		if self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) end
+		return
+			
+	end
 	
 	-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	local isWatchingPlayerNotSupposedToWatchThisPlayer = not iskeyExistsInTable(self.PlayerWatchListStringUserIds[watchingPlayerStringUserId], watchedPlayerStringUserId)
 	
-	if (isWatchingPlayerNotSupposedToWatchThisPlayer) and self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) return end
+	if (isWatchingPlayerNotSupposedToWatchThisPlayer) and (serverHasMoreThanOnePlayer) and self.OnClientAccessedFunction then 
+
+		if self.OnClientAccessedFunction then self.OnClientAccessedFunction(WatchingPlayer) end
+		return
+
+	end
 	
 	-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	

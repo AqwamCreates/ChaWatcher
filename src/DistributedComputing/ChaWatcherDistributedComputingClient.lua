@@ -195,7 +195,9 @@ local function updateData(watchedPlayerStringUserId, deltaTime)
 		
 		local Character = WatchedPlayer.Character
 
-		local test = Character.PrimaryPart
+		local PrimaryPart = Character.PrimaryPart
+		
+		local Velocity = PrimaryPart.Velocity
 
 		isHumanoidDead = (Character.Humanoid:GetState() == Enum.HumanoidStateType.Dead)
 

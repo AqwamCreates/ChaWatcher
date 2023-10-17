@@ -1,4 +1,4 @@
-# Welcome To ChaWatcher's Documentation!
+# Welcome To Aqwam's ChaWatcher Library!
 
 ![ChaWatcherIcon](https://github.com/AqwamCreates/ChaWatcher/assets/67371914/876e056c-920a-416d-82b1-00ccb345eef0)
 

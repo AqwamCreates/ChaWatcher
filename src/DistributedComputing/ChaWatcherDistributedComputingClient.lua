@@ -135,11 +135,11 @@ local function updateDataVectors(watchedPlayerStringUserId, deltaTime: number, i
 
 	local CharacterPrimaryPart = Character.PrimaryPart
 
-	local CHaracterCFrame = Character:GetPivot() -- Since hackers can fake a HumanoidRootPart and control its properties, we'll be relying on both combination of primary part and model position for best results.
+	local CharacterCFrame = Character:GetPivot() -- Since hackers can fake a HumanoidRootPart and control its properties, we'll be relying on both combination of primary part and model position for best results.
 
-	local Position = CHaracterCFrame.Position
+	local Position = CharacterCFrame.Position
 
-	local Orientation = Vector3.new(math.deg(CHaracterCFrame.LookVector.X), math.deg(CHaracterCFrame.LookVector.Y), math.deg(CHaracterCFrame.LookVector.Z)) -- in degrees so it is easier to convert to radians later
+	local Orientation = Vector3.new(math.deg(CharacterCFrame.LookVector.X), math.deg(CharacterCFrame.LookVector.Y), math.deg(CharacterCFrame.LookVector.Z)) -- in degrees so it is easier to convert to radians later
 
 	local Velocity = CharacterPrimaryPart.Velocity
 

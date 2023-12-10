@@ -29,8 +29,8 @@ This license will not be granted to Roblox Corporation or any of its employees. 
 
 -- Superseding Terms and Conditions --
 
-This license agreement supersedes any previous terms and conditions that apply to MatrixL's (or formerly known as Aqwam’s Roblox Matrix Library) 
-and DataPredict's (or formerly known as Aqwam’s Roblox Machine and Deep Learning Library) software libraries or codes contained within ChaWatcher's software library. 
+This license agreement supersedes any previous terms and conditions that apply to MatrixL's (or formerly known as Aqwam’s Matrix Library) 
+and DataPredict's (or formerly known as Aqwam’s Machine and Deep Learning Library) software libraries or codes contained within ChaWatcher's software library. 
 If any of these libraries or codes are used outside of ChaWatcher's library or its derivatives, then the terms and conditions of MatrixL's and DataPredict's 
 software libraries or codes will apply.
 

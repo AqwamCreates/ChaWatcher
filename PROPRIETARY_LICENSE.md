@@ -44,6 +44,8 @@ User shall not:
 
 * Remove or alter any copyright, trademark, or other proprietary notices or labels contained in the Proprietary Codes;
 
+* Use the Proprietary Codes outside of anti-cheat or anti-exploit purposes;
+
 User also shall not remove or modify the license written here, regardless it is a derivative of the Proprietary Codes or not.
 
 -- Ownership and Credit --

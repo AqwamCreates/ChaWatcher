@@ -12,7 +12,7 @@ If there are any issues for this library, don’t be afraid to reach out to me a
 
 In addition, if you are interested in Roblox tutorials and future projects by me, then you can subscribe to me in [YouTube](https://www.youtube.com/channel/UCUrwoxv5dufEmbGsxyEUPZw).
 
-You can get the library from the Roblox's Marketplace [here](https://create.roblox.com/marketplace/asset/15042133614/ChaWatcher)!
+You can get the library from GitHub [here](https://github.com/AqwamCreates/ChaWatcher/module_scripts/ChaWatcher.rbxm)!
 
 Please report any bugs [here](https://github.com/AqwamCreates/ChaWatcher/issues)!
 

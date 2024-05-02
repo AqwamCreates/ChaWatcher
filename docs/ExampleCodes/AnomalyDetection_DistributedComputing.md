@@ -12,7 +12,7 @@ local AnomalyDetector = ChaWatcher.DistributedComputing.AnomalyDetector.new() --
 
 -- maxPlayersToWatchPerPlayers: The maximum number of players that each player needs to watch.
 -- normalThreshold: If the predicted value is less than the normal threshold, then the player is considered not nornal.
--- maxAveragePredictedValuesDifferemce: If the average predicted value difference is larger than this, suspect somebody has altered our data!
+-- maxAveragePredictedValuesDifference: If the average predicted value difference is larger than this, suspect somebody has altered our data!
 
 AnomalyDetector:bindToOutlierFound(function(WatchingPlayer, WatchedPlayer, predictedValue, fullDataVector) -- Runs a function if player's data is an outlier.
 
@@ -20,7 +20,7 @@ AnomalyDetector:bindToOutlierFound(function(WatchingPlayer, WatchedPlayer, predi
 
 end)
 
-AnomalyDetector:bindToAbnormalPredictedValues(function(WatchedPlayer, watchedByPlayerArray, predictedValuesArray) -- Runs a function when average predicted values difference is greater than maxAveragePredictedValuesDifferemce.
+AnomalyDetector:bindToAbnormalPredictedValues(function(WatchedPlayer, watchedByPlayerArray, predictedValuesArray) -- Runs a function when average predicted values difference is greater than maxAveragePredictedValuesDifference.
 
 	print(Player.Name .. "\'s data has been collected!")
 

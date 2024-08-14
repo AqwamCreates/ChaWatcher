@@ -18,7 +18,7 @@ local kernelParameters = {
 	
 }
 
-ModelCreator:setParameters(200, 10^-3.5, nil, "sigmoid", kernelParameters) -- Sets the model settings. You can view the options here: https://aqwamcreates.github.io/DataPredict/API/Models/SupportVectorMachine.html
+ModelCreator:setParameters(200, 10^-3.5, nil, "Sigmoid", kernelParameters) -- Sets the model settings. You can view the options here: https://aqwamcreates.github.io/DataPredict/API/Models/SupportVectorMachine.html
 
 local Model = ModelCreator:train(500) -- Sets the number of data to be trained to avoid reaching exhaustion time. The data are chosen randomly.
 

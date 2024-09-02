@@ -6,6 +6,8 @@ YouTube: https://www.youtube.com/channel/UCUrwoxv5dufEmbGsxyEUPZw
 	
 LinkedIn: https://www.linkedin.com/in/aqwam-harish-aiman/
 
+Email: aqwam.harish.aiman@gmail.com
+
 --------------------------------------------------------------------
 	
 -- License --

@@ -1,4 +1,4 @@
-MIT License - ChaWatcher Software Library
+Modified MIT License - ChaWatcher Software Library
 
 Copyright (c) 2023 Aqwam Harish Aiman
 
